@@ -10,10 +10,15 @@
     "web": "expo start --web"
   },
   "dependencies": {
-    "expo": "~53.0.20",
+    "@shopify/flash-list": "1.7.6",
+    "expo": "53.0.22",
+    "expo-audio": "~0.4.9",
+    "expo-dev-client": "^5.2.4",
     "expo-status-bar": "~2.2.3",
     "react": "19.0.0",
-    "react-native": "0.79.5"
+    "react-native": "0.79.5",
+    "react-native-tree-multi-select": "^2.0.1",
+    "expo-keep-awake": "~14.1.4"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",

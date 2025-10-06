@@ -25,6 +25,11 @@ export declare type myTreeNode<ID = string> = {
 };
 
 export declare type currentPlayingType = myTreeNode[];
+
+export enum Testamento {
+    Antico,
+    Nuovo
+}
 /*declare type singleCurrentPlayingType = {
     oCurrent: myTreeNode,
     oPrevious?: myTreeNode,

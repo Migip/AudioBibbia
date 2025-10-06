@@ -2,14 +2,21 @@
 import { AudioSource } from "expo-audio";
 //import fs = require("file-system");
 //import * as fs from "file-system";
-import * as FileSystem from 'expo-file-system';
+//import * as FileSystem from 'expo-file-system';
 import { myTreeNode } from "./HomepageTypes";
 //import * as sounds from '../assets/data/';
+
+
+declare type sortingOrder = {
+    "id": string,
+    "progr": number
+}
 
 export class cl_id {
     private static idSep: string = ',';
     private static oOnlyNumberRegex = new RegExp("[0-9]+");
     //private static idSep: string = '.';
+    private static _aSortingOrder: sortingOrder[];// = JSON.parse(require('../assets/ordine.json'));
 
     public static pad(iNum: number, iSize: number): string {
         let sReturn = iNum.toString();
@@ -56,6 +63,13 @@ export class cl_id {
     public static sort(sId1: string, sId2: string): number {
         let aSplitA = cl_id.splitIdLevels(sId1);
         let aSplitB = cl_id.splitIdLevels(sId2);
+
+        let oOrderA = cl_id.aSortingOrder.find((value) => { return value.id === aSplitA[0] });
+        let oOrderB = cl_id.aSortingOrder.find((value) => { return value.id === aSplitB[0] });
+        if (oOrderA && oOrderB && oOrderA.progr !== oOrderB.progr) {
+            return oOrderA.progr - oOrderB.progr;
+        };
+
         if (aSplitA.length = aSplitB.length) {
             for (let i = 0; i < aSplitA.length; i++) {
                 let sValueA: string = aSplitA[i];
@@ -85,7 +99,24 @@ export class cl_id {
                 return -1;
             }
         };
-    }
+    };
+
+    private static get aSortingOrder(): sortingOrder[] {
+        console.log(this._aSortingOrder);
+        if (this._aSortingOrder === undefined) {
+            try {
+                console.log(JSON.stringify(require('../assets/ordine.json')));
+                this._aSortingOrder = JSON.parse(require('../assets/ordine.json'));
+                console.log(this._aSortingOrder);
+            } catch (error) {
+                console.error(error)
+            };
+        };
+        return [];
+    };
+    private static set aSortingOrder(aNew: sortingOrder[]) {
+
+    };
 }
 
 /*export class cl_path{

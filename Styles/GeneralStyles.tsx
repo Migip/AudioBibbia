@@ -1,27 +1,19 @@
 import { StyleSheet } from 'react-native';
 
 export const GeneralStyles = StyleSheet.create({
-    flexVert:{
-        flexDirection: 'column'
-    },
-    flexHoriz:{
+    flexHoriz: {
         flexDirection: 'row'
     },
-    spaceBetween:{
-        justifyContent: 'space-between'
+    selectedButton: {
+        backgroundColor: 'blue'
     },
-    aBitSpace:{
-        justifyContent: 'space-around'
+    selectedButtonText: {
+        color: 'white'
     },
-    pageContainer: {
-        flex: 1,
-        paddingTop: 25
+    unselectedButton: {
+        backgroundColor: 'white'
     },
-    titleText: {
-        fontSize: 30,
-        fontWeight: 'bold'
-    },
-    buttonBar:{
-        justifyContent: 'space-between'
+    unselectedButtonText: {
+        color: 'blue'
     }
 });

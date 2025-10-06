@@ -2,11 +2,12 @@ import React, { createRef, useRef } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import myReactComponent from '../CustomComponent/myReactNativeComponent';
 import { StyleSheet, View } from 'react-native';
-import BooksList from '../CustomComponent/completeList';
+import BooksList from './MinorComponent/completeList';
 import { currentPlayingType, myTreeNode } from '../Globals/HomepageTypes';
-import CurrentlyPlaying from '../CustomComponent/currentlyPlaying';
+import CurrentlyPlaying from './MinorComponent/currentlyPlaying';
 import { cl_id, cl_title } from '../Globals/CharUtility';
 import { activateKeepAwakeAsync } from 'expo-keep-awake';
+import { SafeAreaView } from 'react-native-safe-area-context';
 //import Sound from 'react-native-sound';
 
 declare type stateType = {
@@ -24,7 +25,7 @@ export default class Homepage extends myReactComponent {
 
     public render() {
         return (
-            <View style={styles.container}>
+            <SafeAreaView style={styles.container}>
                 <StatusBar style="auto" />
                 <BooksList
                     style={{ flex: 1 }}
@@ -32,13 +33,14 @@ export default class Homepage extends myReactComponent {
                 <CurrentlyPlaying
                     style={{ flex: 1 }}
                     oRef={this._oCurrentPlayingRef} />
-            </View>
+            </SafeAreaView>
         );
     };
 
     public onPlaySelected(aCheckedIds: string[], aTreeList: myTreeNode[]): void {
 
         let aCurrentPlaying: currentPlayingType = [];
+        console.log("Sistemare SORT");
         aCheckedIds.sort(
             cl_id.sort
         );

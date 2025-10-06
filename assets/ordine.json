@@ -1,0 +1,294 @@
+[
+    {
+        "id": "Gen",
+        "progr": 1
+    },
+    {
+        "id": "Es",
+        "progr": 2
+    },
+    {
+        "id": "Lv",
+        "progr": 3
+    },
+    {
+        "id": "Nm",
+        "progr": 4
+    },
+    {
+        "id": "Dt",
+        "progr": 5
+    },
+    {
+        "id": "Gs",
+        "progr": 6
+    },
+    {
+        "id": "Gdc",
+        "progr": 7
+    },
+    {
+        "id": "Rt",
+        "progr": 8
+    },
+    {
+        "id": "1Sam",
+        "progr": 9
+    },
+    {
+        "id": "2Sam",
+        "progr": 10
+    },
+    {
+        "id": "1Re",
+        "progr": 11
+    },
+    {
+        "id": "2Re",
+        "progr": 12
+    },
+    {
+        "id": "1Cr",
+        "progr": 13
+    },
+    {
+        "id": "2Cr",
+        "progr": 14
+    },
+    {
+        "id": "Esd",
+        "progr": 15
+    },
+    {
+        "id": "Ne",
+        "progr": 16
+    },
+    {
+        "id": "Tb",
+        "progr": 17
+    },
+    {
+        "id": "Gdt",
+        "progr": 18
+    },
+    {
+        "id": "Est",
+        "progr": 19
+    },
+    {
+        "id": "1Mac",
+        "progr": 20
+    },
+    {
+        "id": "2Mac",
+        "progr": 21
+    },
+    {
+        "id": "Gb",
+        "progr": 22
+    },
+    {
+        "id": "Sal",
+        "progr": 23
+    },
+    {
+        "id": "Pr",
+        "progr": 24
+    },
+    {
+        "id": "Qo",
+        "progr": 25
+    },
+    {
+        "id": "Ct",
+        "progr": 26
+    },
+    {
+        "id": "Sap",
+        "progr": 27
+    },
+    {
+        "id": "Sir",
+        "progr": 28
+    },
+    {
+        "id": "Is",
+        "progr": 29
+    },
+    {
+        "id": "Ger",
+        "progr": 30
+    },
+    {
+        "id": "Lam",
+        "progr": 31
+    },
+    {
+        "id": "Bar",
+        "progr": 32
+    },
+    {
+        "id": "Ez",
+        "progr": 33
+    },
+    {
+        "id": "Dn",
+        "progr": 34
+    },
+    {
+        "id": "Os",
+        "progr": 35
+    },
+    {
+        "id": "Gl",
+        "progr": 36
+    },
+    {
+        "id": "Am",
+        "progr": 37
+    },
+    {
+        "id": "Abd",
+        "progr": 38
+    },
+    {
+        "id": "Gn",
+        "progr": 39
+    },
+    {
+        "id": "Mi",
+        "progr": 40
+    },
+    {
+        "id": "Na",
+        "progr": 41
+    },
+    {
+        "id": "Ab",
+        "progr": 42
+    },
+    {
+        "id": "Sof",
+        "progr": 43
+    },
+    {
+        "id": "Ag",
+        "progr": 44
+    },
+    {
+        "id": "Zc",
+        "progr": 45
+    },
+    {
+        "id": "Ml",
+        "progr": 46
+    },
+    {
+        "id": "Mt",
+        "progr": 47
+    },
+    {
+        "id": "Mc",
+        "progr": 48
+    },
+    {
+        "id": "Lc",
+        "progr": 49
+    },
+    {
+        "id": "Gv",
+        "progr": 50
+    },
+    {
+        "id": "At",
+        "progr": 51
+    },
+    {
+        "id": "Rm",
+        "progr": 52
+    },
+    {
+        "id": "1Cor",
+        "progr": 53
+    },
+    {
+        "id": "2Cor",
+        "progr": 54
+    },
+    {
+        "id": "Gal",
+        "progr": 55
+    },
+    {
+        "id": "Ef",
+        "progr": 56
+    },
+    {
+        "id": "Fil",
+        "progr": 57
+    },
+    {
+        "id": "Col",
+        "progr": 58
+    },
+    {
+        "id": "1Ts",
+        "progr": 59
+    },
+    {
+        "id": "2Ts",
+        "progr": 60
+    },
+    {
+        "id": "1Tm",
+        "progr": 61
+    },
+    {
+        "id": "2Tm",
+        "progr": 62
+    },
+    {
+        "id": "Tt",
+        "progr": 63
+    },
+    {
+        "id": "Fm",
+        "progr": 64
+    },
+    {
+        "id": "Eb",
+        "progr": 65
+    },
+    {
+        "id": "Gc",
+        "progr": 66
+    },
+    {
+        "id": "1Pt",
+        "progr": 67
+    },
+    {
+        "id": "2Pt",
+        "progr": 68
+    },
+    {
+        "id": "1Gv",
+        "progr": 69
+    },
+    {
+        "id": "2Gv",
+        "progr": 70
+    },
+    {
+        "id": "3Gv",
+        "progr": 71
+    },
+    {
+        "id": "Gd",
+        "progr": 72
+    },
+    {
+        "id": "Ap",
+        "progr": 73
+    }
+]

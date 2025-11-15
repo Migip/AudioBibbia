@@ -22,6 +22,11 @@ declare type i18n_footer = {
     testo: string,
 };
 
+declare type i18n_notif = {
+    playing: string,
+    paused: string,
+};
+
 export interface i18n {
     appTitle: string,
     //Homepage - Booklist
@@ -29,6 +34,9 @@ export interface i18n {
 
     //Homepage - Currently Playing
     CurrentlyPlaying: i18n_CurrentlyPlaying,
+
+    //Notifications
+    notif: i18n_notif,
 
     //Footer
     Footer: i18n_footer

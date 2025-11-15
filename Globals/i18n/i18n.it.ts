@@ -20,6 +20,13 @@ export default class i18n_it implements i18n {
         stopped: 'Esecuzione terminata'
     };
 
+    //Notifications
+    notif = {
+        playing: "In riproduzione",
+        paused: "In pausa",
+    };
+
+    //Footer
     Footer = {
         testo: "Le registrazioni sono state fornite da ",
     };

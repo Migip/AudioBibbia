@@ -1,6 +1,7 @@
 import React from 'react';
 import myReactComponent from './myReactNativeComponent';
 import { StyleProp, GestureResponderEvent, TextStyle, ViewStyle } from 'react-native';
+// import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import { iconType } from '../Globals/constants/Icons';
 import { Button } from 'react-native-elements';
@@ -30,9 +31,14 @@ export default class CustomButton extends myReactComponent<CustomButtonProps> {
             return (
                 <FontAwesome6.Button
                     name={icon}
-                    backgroundColor={sBackgroundColor}
+                    backgroundColor='white'
                     color={sColor}
-                    style={[Styles.button]}
+                    // style={[Styles.button]}
+                    style={[
+                        Styles.button,
+                        {
+                            backgroundColor: sBackgroundColor
+                        }]}
                     onPress={(event: GestureResponderEvent) => {
                         try {
                             this._log("onPress start", this.props.title);

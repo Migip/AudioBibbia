@@ -1,6 +1,6 @@
 import React, { createRef, useRef } from 'react';
 import myReactComponent from '../../CustomComponent/myReactNativeComponent';
-import { currentPlayingType } from '../../Globals/HomepageTypes';
+//import { currentPlayingType } from '../../Globals/HomepageTypes';
 import { Button, FlatList, GestureResponderEvent, StyleProp, Text, View, ViewStyle } from 'react-native';
 import { HomepageStyle } from '../../Styles/HomepageStyle';
 import { GeneralStyles } from '../../Styles/GeneralStyles';
@@ -8,31 +8,32 @@ import { AudioPlayer, AudioSource, AudioStatus, createAudioPlayer, setAudioModeA
 import { cl_link } from '../../Globals/CharUtility';
 import ActiveButton from '../../CustomComponent/activeButton';
 import { myIcons } from '../../Globals/constants/Icons';
+import myPlayer, { currentPlayingType, playingStatus } from '../../Globals/MyPlayer';
 
 export declare type CurrentlyPlayingProps = {
     oRef?: React.RefObject<CurrentlyPlaying | null>,
     style?: StyleProp<ViewStyle>
 };
 
+
 declare type stateType = {
-    aCurrentPlaying: currentPlayingType,
-    oPlayingStatus: playingStatus
+    //aCurrentPlaying: currentPlayingTypeIntern[],
+    aCurrentPlaying: currentPlayingType[],
+    // oPlayingStatus: playingStatus
 };
 
 export default class CurrentlyPlaying extends myReactComponent<CurrentlyPlayingProps> {
     private _oCurrState: stateType;
     public readonly state: stateType;
-    private _iPlayingIndex: number = -1;
-    private _oAudio?: AudioPlayer;
-    private _oAudioSource?: AudioSource;
-    private _aAlreadyFinished: number[] = [];
+    // private _oAudio?: AudioPlayer;
+    // private _oAudioSource?: AudioSource;
     private _oRef?: React.RefObject<CurrentlyPlaying | null>;
 
     public constructor(props: CurrentlyPlayingProps) {
         super(props);
         this._oCurrState = {
             aCurrentPlaying: [],//props.aCurrentPlaying
-            oPlayingStatus: playingStatus.none
+            // oPlayingStatus: playingStatus.none
         };
         setAudioModeAsync({
             shouldPlayInBackground: true
@@ -42,7 +43,7 @@ export default class CurrentlyPlaying extends myReactComponent<CurrentlyPlayingP
     };
     public render() {
         let sPlayingStatusText: string;
-        switch (this._oCurrState.oPlayingStatus) {
+        switch (this._oPlayingStatus) {
             case playingStatus.playing:
                 sPlayingStatusText = this._oI18n.CurrentlyPlaying.playing
                 break;
@@ -127,7 +128,7 @@ export default class CurrentlyPlaying extends myReactComponent<CurrentlyPlayingP
                                 title={this._oI18n.CurrentlyPlaying.play}
                                 onPress={this._onPlayPress.bind(this)}
                                 icon={myIcons.play}
-                                active={this._oCurrState.oPlayingStatus === playingStatus.playing} />
+                                active={this._oPlayingStatus === playingStatus.playing} />
                             {/* <Button
                             title='Play/Pausa'
                             onPress={this._onPlayPausePress.bind(this)} /> */}
@@ -137,7 +138,7 @@ export default class CurrentlyPlaying extends myReactComponent<CurrentlyPlayingP
                                 title={this._oI18n.CurrentlyPlaying.pause}
                                 onPress={this._onPausePress.bind(this)}
                                 icon={myIcons.pause}
-                                active={this._oCurrState.oPlayingStatus === playingStatus.paused} />
+                                active={this._oPlayingStatus === playingStatus.paused} />
                         </View>
                         <View>
                             <ActiveButton
@@ -154,7 +155,7 @@ export default class CurrentlyPlaying extends myReactComponent<CurrentlyPlayingP
                                 title={this._oI18n.CurrentlyPlaying.stop}
                                 onPress={this._onStop.bind(this)}
                                 icon={myIcons.stop}
-                                active={this._oCurrState.oPlayingStatus === playingStatus.stop} />
+                                active={this._oPlayingStatus === playingStatus.stop} />
                             {/* <Button
                             title={this._oI18n.CurrentlyPlaying.stop}
                             onPress={this._onStop.bind(this)} /> */}
@@ -171,110 +172,48 @@ export default class CurrentlyPlaying extends myReactComponent<CurrentlyPlayingP
             </View>)
     };
 
+    componentDidMount(): void {
+        // gestisci gli eventi di myPlayer
+        myPlayer.addListener('playbackStatusUpdate', (aCurrentPlaying: currentPlayingType[]) => {
+            //console.log("CurrentlyPlaying - playbackStatusUpdate", aCurrentPlaying);
+            this._refresh(aCurrentPlaying);
+        });
+    }
 
 
-    // private _onPlayPausePress(event: GestureResponderEvent): void {
-    //     if (this._oAudio?.currentStatus.playing === true) {
-    //         this._oAudio.pause();
-    //         this._oCurrState.oPlayingStatus = playingStatus.paused;
-    //     } else if (this._oAudio?.currentStatus.playing === false) {
-    //         this._oAudio.play(); this._oCurrState.oPlayingStatus = playingStatus.playing;
-    //     } else if (!this._oAudio && this._oCurrState.aCurrentPlaying.length > 0) {
-    //         this._onNext();
-    //     };
-    //     this.setState(this._oCurrState);
-    // };
     private _onPlayPress(event: GestureResponderEvent): void {
-        if (this._oAudio?.currentStatus.playing === false) {
-            this._oAudio.play(); this._oCurrState.oPlayingStatus = playingStatus.playing;
-        } else if (!this._oAudio && this._oCurrState.aCurrentPlaying.length > 0) {
-            this._onNext();
-        };
-        this.setState(this._oCurrState);
+        this._refresh(myPlayer.play());
     };
     private _onPausePress(event: GestureResponderEvent): void {
-        if (this._oAudio?.currentStatus.playing === true) {
-            this._oAudio.pause();
-            this._oCurrState.oPlayingStatus = playingStatus.paused;
-        };
-        this.setState(this._oCurrState);
+        this._refresh(myPlayer.pause());
     };
 
     private _onNext(): void {
-        try {
-            if (this._iPlayingIndex !== -1) {
-                let oCurrent = this._oCurrState.aCurrentPlaying[this._iPlayingIndex];
-                if (this._oAudio?.playing === true) {
-                    this._oAudio.pause();
-                }
-                oCurrent.playing = false;
-            }
-        } catch (error) {
-            console.log("onNext:", error)
-        };
-
-        if (this._iPlayingIndex < this._oCurrState.aCurrentPlaying.length - 1) {
-            this._oCurrState.oPlayingStatus = playingStatus.playing;
-            this._iPlayingIndex++;
-            let oNext = this._oCurrState.aCurrentPlaying[this._iPlayingIndex];
-            //this._oCurrState.oAudioSource = require(oFirst.path);
-            this._oAudioSource = cl_link.getSource(oNext);
-            this._oAudio = createAudioPlayer(this._oAudioSource);
-            this._oAudio.addListener(
-                'playbackStatusUpdate',
-                this._onAudioStatusUpdate.bind(this));
-            this._oAudio.play();
-            oNext.playing = true;
-
-            this.setState(this._oCurrState);
-        } else {
-            this._onStop();
-        };
+        this._refresh(myPlayer.next());
     };
 
     private _onStop(): void {
-        this._iPlayingIndex = -1;
-        this._oCurrState.aCurrentPlaying.forEach(
-            (oLine) => {
-                oLine.playing = undefined;
-            }
-        );
-        if (this._oAudio?.currentStatus.playing === true) {
-            this._oCurrState.oPlayingStatus = playingStatus.stop;
-            this._oAudio.pause();
-            this._oAudio = undefined;
-        };
+        this._refresh(myPlayer.stop());
+    };
+
+    public onPlayNewList(aCurrentPlaying: currentPlayingType[]) {
+        this._refresh(aCurrentPlaying);
+    };
+
+    private get _aCurrentPlaying(): currentPlayingType[] {
+        return this._oCurrState.aCurrentPlaying;
+    };
+    private set _aCurrentPlaying(aNew: currentPlayingType[]) {
+        this._oCurrState.aCurrentPlaying = aNew;
+        //console.log("CurrentlyPlaying - set _aCurrentPlaying", aNew);
         this.setState(this._oCurrState);
     };
 
-    private _onAudioStatusUpdate(status: AudioStatus): void {
-        //console.log(status);
-        if (status.didJustFinish === true && this._aAlreadyFinished.find((id) => { return id === status.id }) === undefined) {
-            this._aAlreadyFinished.push(status.id);
-            this._onNext();
-        }
+    private get _oPlayingStatus(): playingStatus {
+        return myPlayer.playingStatus;
     };
 
-    public onPlayNewList(aCurrentPlaying: currentPlayingType) {
-        this._onStop();
-
-        this._oCurrState.aCurrentPlaying = aCurrentPlaying;
-
-        if (this._oCurrState.aCurrentPlaying.length > 0) {
-            try {
-                this._onNext();
-            } catch (error) {
-                console.log("ERRORE FINALE:", error);
-            }
-        };
-
-        this.setState(this._oCurrState);
+    private _refresh(aNewPlayer: currentPlayingType[]) {
+        this._aCurrentPlaying = aNewPlayer;
     };
-}
-
-enum playingStatus {
-    none,
-    playing,
-    paused,
-    stop
 }

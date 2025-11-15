@@ -8,6 +8,8 @@ import CurrentlyPlaying from './MinorComponent/currentlyPlaying';
 import { cl_id, cl_title } from '../Globals/CharUtility';
 import { activateKeepAwakeAsync } from 'expo-keep-awake';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import myPlayer from '../Globals/MyPlayer';
 //import Sound from 'react-native-sound';
 
 declare type stateType = {
@@ -15,15 +17,30 @@ declare type stateType = {
 
 export default class Homepage extends myReactComponent {
     private _oCurrentPlayingRef?: React.RefObject<CurrentlyPlaying | null> = createRef();
-
+    private _oTab = createBottomTabNavigator();
     public constructor(props: any) {
         super(props);
         console.log("|---------------------- INIZIO APP ----------------------|");
         //useKeepAwake();
-        activateKeepAwakeAsync();
+        //activateKeepAwakeAsync();
     };
 
     public render() {
+        // const Tab = createBottomTabNavigator();
+
+        // return (
+        //     // <SafeAreaView style={styles.container}>
+        //     //     <StatusBar style="auto" />
+        //         <this._oTab.Navigator>
+        //             <this._oTab.Screen
+        //                 name="Home"
+        //                 component={BooksList} />
+        //             <this._oTab.Screen
+        //                 name="Profile"
+        //                 component={CurrentlyPlaying} />
+        //         </this._oTab.Navigator>
+        //     // </SafeAreaView>
+        // );
         return (
             <SafeAreaView style={styles.container}>
                 <StatusBar style="auto" />
@@ -38,44 +55,7 @@ export default class Homepage extends myReactComponent {
     };
 
     public onPlaySelected(aCheckedIds: string[], aTreeList: myTreeNode[]): void {
-
-        let aCurrentPlaying: currentPlayingType = [];
-        console.log("Sistemare SORT");
-        aCheckedIds.sort(
-            cl_id.sort
-        );
-
-        aCheckedIds.forEach(
-            (sId) => {
-                let aIdLevel = cl_id.splitIdLevels(sId);
-                var sCurrentId: string = '';
-                var oCurrentNode: myTreeNode | undefined = undefined;
-                var sName: string = '';
-                aIdLevel.forEach(sId => {
-                    sCurrentId = cl_id.concatId(sCurrentId, sId);
-                    if (oCurrentNode === undefined) {
-                        oCurrentNode = aTreeList.find((oNode) => { return oNode.id === sCurrentId });
-                    } else {
-                        oCurrentNode = oCurrentNode.children?.find((oNode) => { return oNode.id === sCurrentId });
-                    };
-                    if (oCurrentNode !== undefined) {
-                        if (oCurrentNode.link !== undefined) {
-                            aCurrentPlaying.push({
-                                id: oCurrentNode.id,
-                                name: cl_title.concat(sName, oCurrentNode.name),
-                                link: oCurrentNode.link
-                            });
-                        } else {
-                            sName = cl_title.concat(sName, oCurrentNode.name);
-                        };
-                    } else {
-                        console.log("Non trovato id ", sCurrentId);
-                    };
-                });
-            }
-        );
-
-        this._oCurrentPlayingRef?.current?.onPlayNewList(aCurrentPlaying);
+        this._oCurrentPlayingRef?.current?.onPlayNewList(myPlayer.setNewList(aCheckedIds,aTreeList));
     };
 };
 

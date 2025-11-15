@@ -16,7 +16,8 @@ export class cl_id {
     private static idSep: string = ',';
     private static oOnlyNumberRegex = new RegExp("[0-9]+");
     //private static idSep: string = '.';
-    private static _aSortingOrder: sortingOrder[];// = JSON.parse(require('../assets/ordine.json'));
+    // private static _aSortingOrder: sortingOrder[];// = JSON.parse(require('../assets/ordine.json'));
+    private static _oSortingOrder: Map<string, sortingOrder>;
 
     public static pad(iNum: number, iSize: number): string {
         let sReturn = iNum.toString();
@@ -64,11 +65,19 @@ export class cl_id {
         let aSplitA = cl_id.splitIdLevels(sId1);
         let aSplitB = cl_id.splitIdLevels(sId2);
 
-        let oOrderA = cl_id.aSortingOrder.find((value) => { return value.id === aSplitA[0] });
-        let oOrderB = cl_id.aSortingOrder.find((value) => { return value.id === aSplitB[0] });
+        // let oOrderA = cl_id.aSortingOrder.find((value) => {
+        //     let bReturn: boolean = value.id === aSplitA[0];
+        //     return bReturn;
+        //     // return value.id === aSplitA[0]
+        // });
+        // let oOrderB = cl_id.aSortingOrder.find((value) => { return value.id === aSplitB[0] });
+        let oOrderA = cl_id.oSortingOrder.get(aSplitA[0]);
+        let oOrderB = cl_id.oSortingOrder.get(aSplitB[0]);
         if (oOrderA && oOrderB && oOrderA.progr !== oOrderB.progr) {
+            // console.log("sort", oOrderA, oOrderB)
             return oOrderA.progr - oOrderB.progr;
         };
+        // console.log("sort2", oOrderA, oOrderB, aSplitA[0], aSplitB[0]);
 
         if (aSplitA.length = aSplitB.length) {
             for (let i = 0; i < aSplitA.length; i++) {
@@ -101,20 +110,24 @@ export class cl_id {
         };
     };
 
-    private static get aSortingOrder(): sortingOrder[] {
-        console.log(this._aSortingOrder);
-        if (this._aSortingOrder === undefined) {
+    // private static get aSortingOrder(): sortingOrder[] {
+    private static get oSortingOrder(): Map<string, sortingOrder> {
+        // console.log(this._aSortingOrder);
+        if (this._oSortingOrder === undefined) {
             try {
-                console.log(JSON.stringify(require('../assets/ordine.json')));
-                this._aSortingOrder = JSON.parse(require('../assets/ordine.json'));
-                console.log(this._aSortingOrder);
+                // console.log(JSON.stringify(require('../assets/ordine.json')));
+                // this._aSortingOrder = require('../assets/ordine.json');
+                let aSortingOrder: sortingOrder[] = require('../assets/ordine.json');
+                this._oSortingOrder = new Map(aSortingOrder.map(item => [item.id, item]));
+                // console.log("aSortingOrder", this._aSortingOrder);
             } catch (error) {
                 console.error(error)
             };
         };
-        return [];
+        return this._oSortingOrder;
     };
-    private static set aSortingOrder(aNew: sortingOrder[]) {
+    // private static set aSortingOrder(aNew: Map<string, sortingOrder>) {
+    private static set oSortingOrder(aNew: Map<string, sortingOrder>) {
 
     };
 }

@@ -2,6 +2,12 @@ import { i18n } from "./i18n.general";
 
 export default class i18n_it implements i18n {
     appTitle = 'Elenco dei canti';
+
+    Tabs= {
+        scelta: 'Scegli brano',
+        playing: 'In riproduzione'
+    };
+
     //Homepage - Chant list
     BooksList = {
         at: 'AT',
@@ -11,6 +17,8 @@ export default class i18n_it implements i18n {
 
     //Filters
     CurrentlyPlaying = {
+        ListTitle: 'Brani in riproduzione',
+        EmptyList: 'Nessun brano in riproduzione',
         play: 'Play',
         pause: 'Pausa',
         next: 'Avanti',

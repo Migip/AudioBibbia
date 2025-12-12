@@ -8,7 +8,15 @@ declare type i18n_BooksList = {
     playSelected: string
 };
 
+
+declare type i18n_Tabs = {
+    scelta: string,
+    playing: string
+};
+
 declare type i18n_CurrentlyPlaying = {
+    ListTitle: string,
+    EmptyList: string,
     play: string,
     pause: string,
     next: string,
@@ -29,6 +37,10 @@ declare type i18n_notif = {
 
 export interface i18n {
     appTitle: string,
+
+    //Tabs
+    Tabs: i18n_Tabs,
+
     //Homepage - Booklist
     BooksList: i18n_BooksList,
 

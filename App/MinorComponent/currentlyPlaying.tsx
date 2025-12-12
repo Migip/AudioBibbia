@@ -11,8 +11,8 @@ import { myIcons } from '../../Globals/constants/Icons';
 import myPlayer, { currentPlayingType, playingStatus } from '../../Globals/MyPlayer';
 
 export declare type CurrentlyPlayingProps = {
-    oRef?: React.RefObject<CurrentlyPlaying | null>,
-    style?: StyleProp<ViewStyle>
+    // oRef?: React.RefObject<CurrentlyPlaying | null>,
+    // style?: StyleProp<ViewStyle>
 };
 
 
@@ -27,7 +27,7 @@ export default class CurrentlyPlaying extends myReactComponent<CurrentlyPlayingP
     public readonly state: stateType;
     // private _oAudio?: AudioPlayer;
     // private _oAudioSource?: AudioSource;
-    private _oRef?: React.RefObject<CurrentlyPlaying | null>;
+    //private _oRef?: React.RefObject<CurrentlyPlaying | null>;
 
     public constructor(props: CurrentlyPlayingProps) {
         super(props);
@@ -38,7 +38,7 @@ export default class CurrentlyPlaying extends myReactComponent<CurrentlyPlayingP
         setAudioModeAsync({
             shouldPlayInBackground: true
         });
-        this._oRef = this.props.oRef;
+        // this._oRef = this.props.oRef;
         this.state = this._oCurrState;
     };
     public render() {
@@ -58,15 +58,17 @@ export default class CurrentlyPlaying extends myReactComponent<CurrentlyPlayingP
                 break;
         };
 
-        if (this._oRef) {
-            this._oRef.current = this;
-        };
+        // if (this._oRef) {
+        //     this._oRef.current = this;
+        // };
         return (
             <View
-                style={[this.props.style,
-                {
-                    flexDirection: 'column'
-                }
+                style={[
+                    // this.props.style,
+                    {
+                        flexDirection: 'column',
+                        flex: 1
+                    }
                 ]}>
                 <FlatList
                     data={this.state.aCurrentPlaying}
@@ -83,7 +85,7 @@ export default class CurrentlyPlaying extends myReactComponent<CurrentlyPlayingP
                                 style={
                                     HomepageStyle.itemNumber
                                 }>
-                                Brano
+                                {this._oI18n.CurrentlyPlaying.ListTitle}
                             </Text>
                         </View>
                     }
@@ -105,7 +107,7 @@ export default class CurrentlyPlaying extends myReactComponent<CurrentlyPlayingP
                     ListEmptyComponent={
                         <View>
                             <Text>
-                                Nessun brano in riproduzione
+                                {this._oI18n.CurrentlyPlaying.EmptyList}
                             </Text>
                         </View>
                     }
@@ -173,13 +175,13 @@ export default class CurrentlyPlaying extends myReactComponent<CurrentlyPlayingP
     };
 
     componentDidMount(): void {
+        this._refresh(myPlayer.getList());
         // gestisci gli eventi di myPlayer
         myPlayer.addListener('playbackStatusUpdate', (aCurrentPlaying: currentPlayingType[]) => {
             //console.log("CurrentlyPlaying - playbackStatusUpdate", aCurrentPlaying);
             this._refresh(aCurrentPlaying);
         });
-    }
-
+    };
 
     private _onPlayPress(event: GestureResponderEvent): void {
         this._refresh(myPlayer.play());

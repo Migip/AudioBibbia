@@ -5,10 +5,11 @@ import { Button, GestureResponderEvent, StyleProp, Text, View, ViewStyle } from 
 import { TreeView, TreeViewRef } from 'react-native-tree-multi-select';
 import Discriminator from './discriminatorAT_NT';
 import ActiveButton from '../../CustomComponent/activeButton';
+import myPlayer from '../../Globals/MyPlayer';
 
 export declare type BooksListProps = {
-    onPlaySelected: (aCheckedIds: string[], aTreeList: myTreeNode[]) => void,
-    style?: StyleProp<ViewStyle>
+    // onPlaySelected: (aCheckedIds: string[], aTreeList: myTreeNode[]) => void,
+    // style?: StyleProp<ViewStyle>
 };
 
 declare type stateType = {
@@ -35,19 +36,19 @@ export default class BooksList extends myReactComponent<BooksListProps> {
     public render() {
         return (
             <View
-                style={[this.props.style,
+                style={[
+                    // this.props.style,
                 {
-                    flexDirection: 'column'
+                    flexDirection: 'column',
+                    flex: 1
                 }
                 ]}>
                 <Discriminator
                     oTestamento={this.oTestamento}
                     onAnticoPress={this._onAnticoPress.bind(this)}
                     onNuovoPress={this._onNuovoPress.bind(this)} />
-                <Text
-                    style={{ flex: 1 }}>Elenco</Text>
                 <View
-                    style={{ flex: 3 }}>
+                    style={{ flex: 1 }}>
                     <TreeView
                         data={this.state.aTreeList}
                         ref={this._oRef}
@@ -55,8 +56,7 @@ export default class BooksList extends myReactComponent<BooksListProps> {
                     /* ref={this._oTreeViewRef} */
                     />
                 </View>
-                <View
-                    style={{ flex: 1 }}>
+                <View>
                     <ActiveButton
                         title={this._oI18n.BooksList.playSelected}
                         onPress={this._onPlaySelected.bind(this)}
@@ -77,7 +77,8 @@ export default class BooksList extends myReactComponent<BooksListProps> {
     };
 
     private _onPlaySelected(event: GestureResponderEvent): void {
-        this.props.onPlaySelected(this._aCheckedIds, this._oState.aTreeList);
+        //this.props.onPlaySelected(this._aCheckedIds, this._oState.aTreeList);
+        myPlayer.setNewList(this._aCheckedIds, this._oState.aTreeList)
     };
 
     private static _getTreeListNT(): myTreeNode[] {

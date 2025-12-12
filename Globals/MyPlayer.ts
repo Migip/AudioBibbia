@@ -45,6 +45,11 @@ class myPlayerInstance {
         return this.onNext();
     };
 
+
+    public getList(): currentPlayingType[] {
+        return this._aCurrentPlayingOut;
+    };
+
     private get _oCurrentPlaying(): currentPlayingTypeIntern | undefined {
         return this._aCurrentPlaying[this._iPlayingIndex];
     };
@@ -145,13 +150,15 @@ class myPlayerInstance {
     };
 
     public get nCurrentTime(): string {
-        let nReturn: number = this._oCurrentPlaying?.oAudio.currentStatus.currentTime || 0;
-        return nReturn.toFixed(2);;
+        // let nReturn: number = this._oCurrentPlaying?.oAudio.currentStatus.currentTime || 0;
+        // return nReturn.toFixed(2);;
+        return myPlayerInstance._timeToString(this._oCurrentPlaying?.oAudio.currentStatus.currentTime);
     };
 
     public get nDuration(): string {
-        let nReturn: number = this._oCurrentPlaying?.oAudio.currentStatus.duration || 0;
-        return nReturn.toFixed(2);;
+        // let nReturn: number = this._oCurrentPlaying?.oAudio.currentStatus.duration || 0;
+        // return nReturn.toFixed(2);
+        return myPlayerInstance._timeToString(this._oCurrentPlaying?.oAudio.currentStatus.duration);
     };
 
     public get bPlaying(): boolean {
@@ -161,6 +168,22 @@ class myPlayerInstance {
     public addListener(eventType: string, listener: (event: any) => void) {
         return this._oEvent.addListener(eventType, listener);
     };
+
+    private static _timeToString(nTime: number | undefined): string {
+        if (nTime === undefined) {
+            return "";
+        };
+        let nHours: number = Math.floor(nTime / 3600);
+        let nMinutes: number = Math.floor((nTime % 3600) / 60);
+        let nSeconds: number = Math.floor(nTime % 60);
+        let sReturn: string = "";
+        if (nHours > 0) {
+            sReturn += nHours.toString().padStart(2, '0') + ":";
+        };
+        sReturn += nMinutes.toString().padStart(2, '0') + ":";
+        sReturn += nSeconds.toString().padStart(2, '0');
+        return sReturn;
+    }
 };
 
 
@@ -214,6 +237,11 @@ export default class myPlayer {
         );
         return this._oInstance.setNewList(aCurrentPlaying);
     };
+
+
+    public static getList(): currentPlayingType[] {
+        return this._oInstance.getList();
+    }
 
     public static play(): currentPlayingType[] {
         return this._oInstance.onPlay();

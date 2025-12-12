@@ -3,24 +3,6 @@ import { Platform } from 'react-native';
 import Constants from 'expo-constants';
 import myPlayer from './MyPlayer';
 
-export type scheduleNotificationType = {
-    title: string,
-    subtitle: string,
-    body: string,
-    catId: notifCategory
-};
-
-enum notifActions {
-    PLAY = 'PLAY',
-    PAUSE = 'PAUSE'
-};
-
-export enum notifCategory {
-    PLAY = 'P1',
-    PAUSE = 'P2',
-    PLAY_PAUSE = 'PP'
-}
-
 class myNotificationInstance {
     private _oNotifResponse?: Notifications.EventSubscription;
     private _oNotifId?: string;
@@ -38,25 +20,27 @@ class myNotificationInstance {
 
     public async _scheduleNotificationsAsync(oOptions: scheduleNotificationType) {
 
-        let oRequest: Notifications.NotificationRequestInput = {
-            content: {
-                title: oOptions.title,
-                subtitle: oOptions.subtitle,
-                body: oOptions.body,
-                categoryIdentifier: oOptions.catId
-            },
-            identifier: this._oNotifId,
-            trigger: null
-        };
+        if (this._oNotifId != '$') {
+            let oRequest: Notifications.NotificationRequestInput = {
+                content: {
+                    title: oOptions.title,
+                    subtitle: oOptions.subtitle,
+                    body: oOptions.body,
+                    categoryIdentifier: oOptions.catId
+                },
+                identifier: this._oNotifId,
+                trigger: null
+            };
 
-        Notifications.scheduleNotificationAsync(oRequest)
-            .then((value) => {
-                // console.log(this._oNotifId);
-                this._oNotifId = value;
-            })
-            .catch((error) => { console.error(error) });
-        if (!this._oNotifId) {
-            this._oNotifId = '$';
+            Notifications.scheduleNotificationAsync(oRequest)
+                .then((value) => {
+                    // console.log(this._oNotifId);
+                    this._oNotifId = value;
+                })
+                .catch((error) => { console.error(error) });
+            if (!this._oNotifId) {
+                this._oNotifId = '$';
+            };
         };
     };
 
@@ -186,6 +170,25 @@ class myNotificationInstance {
         };
     };
 };
+
+
+export type scheduleNotificationType = {
+    title: string,
+    subtitle: string,
+    body: string,
+    catId: notifCategory
+};
+
+enum notifActions {
+    PLAY = 'PLAY',
+    PAUSE = 'PAUSE'
+};
+
+export enum notifCategory {
+    PLAY = 'P1',
+    PAUSE = 'P2',
+    PLAY_PAUSE = 'PP'
+}
 
 export default class myNotification {
     private static _oInstance: myNotificationInstance = new myNotificationInstance();

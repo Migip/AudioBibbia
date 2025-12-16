@@ -92,9 +92,15 @@ export default class CurrentlyPlaying extends myReactComponent<CurrentlyPlayingP
                     renderItem={({ item }) =>
                         <View>
                             <Text style={{
-                                display: item.playing ? 'none' : 'flex'
+                                display: !item.playing && !item.paused ? 'flex' : 'none'
                             }}>
                                 {item.name}
+                            </Text>
+                            <Text style={{
+                                display: !item.playing && item.paused ? 'flex' : 'none',
+                                fontStyle: 'italic'
+                            }}>
+                                {item.name} - In pausa
                             </Text>
                             <Text style={{
                                 display: !item.playing ? 'none' : 'flex',

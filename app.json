@@ -32,7 +32,10 @@
       "blockedPermissions": [
         "android.permission.RECORD_AUDIO"
       ],
-      "package": "com.AudioBibbia"
+      "package": "com.AudioBibbia",
+      "navigationBar": {
+        "visible": true
+      }
     },
     "web": {
       "favicon": "./assets/favicon.png"

@@ -14,12 +14,14 @@ export enum playingStatus {
 
 export declare type currentPlayingType = {
     name: string,
-    playing: boolean
+    playing: boolean,
+    paused: boolean
 };
 
 declare type currentPlayingTypeIntern = {
     id: string,
-    name: string
+    name: string,
+    paused: boolean,
     oAudio: Audio.AudioPlayer
 };
 
@@ -28,6 +30,7 @@ class myPlayerInstance {
     private _aCurrentPlaying: currentPlayingTypeIntern[] = [];
     private _aAlreadyFinished: number[] = [];
     private _oEvent: NativeEventEmitter = new NativeEventEmitter();
+    private _isHandlingFinish: boolean = false;
 
     constructor() {
         Audio.setAudioModeAsync({
@@ -51,13 +54,17 @@ class myPlayerInstance {
     };
 
     private get _oCurrentPlaying(): currentPlayingTypeIntern | undefined {
+        //console.log("_oCurrentPlaying", this._iPlayingIndex, this._aCurrentPlaying[this._iPlayingIndex]?.name,this._aCurrentPlaying[this._iPlayingIndex]?.oAudio.currentStatus.playing);
         return this._aCurrentPlaying[this._iPlayingIndex];
     };
 
     public onPlay(): currentPlayingType[] {
         if (this._oCurrentPlaying?.oAudio.currentStatus.playing === false) {
             this._oCurrentPlaying?.oAudio.play();
-        } else if (this._oCurrentPlaying?.oAudio.currentStatus.playbackState === 'ended' && this._aCurrentPlaying.length > 0) {
+            this._oCurrentPlaying.paused = false;
+        } else if ((this._oCurrentPlaying?.oAudio.currentStatus.playbackState === 'ended'
+            || this._iPlayingIndex === -1)
+            && this._aCurrentPlaying.length > 0) {
             return this.onNext();
         };
         return this._aCurrentPlayingOut;
@@ -66,6 +73,7 @@ class myPlayerInstance {
     public onPause(): currentPlayingType[] {
         if (this._oCurrentPlaying?.oAudio.currentStatus.playing === true) {
             this._oCurrentPlaying?.oAudio.pause();
+            this._oCurrentPlaying.paused = true;
         };
         return this._aCurrentPlayingOut;
     };
@@ -75,14 +83,22 @@ class myPlayerInstance {
             if (this._iPlayingIndex !== -1) {
                 //let oCurrent = this._oCurrentPlaying;
                 //if (this._oCurrentPlaying?.oAudio?.playing === true) {
-                if (this.bPlaying === true) {
-                    this._oCurrentPlaying?.oAudio.pause();
+                // if (this.bPlaying === true) {
+                //     this._oCurrentPlaying?.oAudio.pause();
+                // };
+                if (this._oCurrentPlaying) {
+                    this._oCurrentPlaying.oAudio.seekTo(0);
+                    this._oCurrentPlaying.oAudio.pause();
+                    this._oCurrentPlaying.paused = false;
+                    console.log("onNextPaused:", this._oCurrentPlaying.oAudio);
                 };
-            }
+            };
         } catch (error) {
-            console.log("onNext:", error)
+            console.error("onNext:", error)
         };
 
+
+        // console.log("his._iPlayingIndex", this._iPlayingIndex);
         if (this._iPlayingIndex < this._aCurrentPlaying.length - 1) {
             this._iPlayingIndex++;
             this._oCurrentPlaying?.oAudio.addListener(
@@ -97,7 +113,11 @@ class myPlayerInstance {
     };
 
     public onStop(): currentPlayingType[] {
-        this._oCurrentPlaying?.oAudio.pause();
+        if (this._oCurrentPlaying) {
+            this._oCurrentPlaying.oAudio.seekTo(0);
+            this._oCurrentPlaying.oAudio.pause();
+            this._oCurrentPlaying.paused = false;
+        };
         this._iPlayingIndex = -1;
         this._aAlreadyFinished = [];
         myNotification.dismissAllNotificationsAsync();
@@ -119,19 +139,39 @@ class myPlayerInstance {
     private _onAudioStatusUpdate(status: Audio.AudioStatus): void {
         //console.log(status);
         this._newNotification();
-        if (status.didJustFinish === true && this._aAlreadyFinished.find((id) => { return id === status.id }) === undefined) {
+        if (status.didJustFinish === true
+            && this._aAlreadyFinished.find((id) => { return id === status.id }) === undefined
+            && this._isHandlingFinish === false) {
+
+            this._isHandlingFinish = true;
             this._aAlreadyFinished.push(status.id);
+            // console.log(status, this._aAlreadyFinished);
             this.onNext();
+            setTimeout(() => {
+                this._isHandlingFinish = false;
+            }, 100);
         };
+        // setTimeout(() => {
+        //     this._onAudioStatusFinishedAsync(status);
+        // }, 2);
         this._oEvent.emit('playbackStatusUpdate', this._aCurrentPlayingOut);
     };
+
+    // private _onAudioStatusFinishedAsync(status: Audio.AudioStatus): void {
+    //     if (status.didJustFinish === true && this._aAlreadyFinished.find((id) => { return id === status.id }) === undefined) {
+    //         this._aAlreadyFinished.push(status.id);
+    //         console.log(status, this._aAlreadyFinished);
+    //         this.onNext();
+    //     };
+    // };
 
     private get _aCurrentPlayingOut(): currentPlayingType[] {
         let aReturn: currentPlayingType[] = [];
         this._aCurrentPlaying.forEach((oValue) => {
             let oReturn: currentPlayingType = {
                 name: oValue.name,
-                playing: oValue.oAudio.playing
+                playing: oValue.oAudio.playing,
+                paused: oValue.paused
             };
             aReturn.push(oReturn);
         });
@@ -224,7 +264,8 @@ export default class myPlayer {
                             aCurrentPlaying.push({
                                 id: oCurrentNode.id,
                                 name: cl_title.concat(sName, oCurrentNode.name),
-                                oAudio: Audio.createAudioPlayer(cl_link.getSource(oCurrentNode))
+                                oAudio: Audio.createAudioPlayer(cl_link.getSource(oCurrentNode)),
+                                paused: false
                             });
                         } else {
                             sName = cl_title.concat(sName, oCurrentNode.name);

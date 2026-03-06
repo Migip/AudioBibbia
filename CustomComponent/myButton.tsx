@@ -16,6 +16,7 @@ declare type CustomButtonProps = {
     icon?: iconType,
     backgroundColor?: string,
     textColor?: string,
+    noBorder?: boolean
 };
 
 export default class CustomButton extends myReactComponent<CustomButtonProps> {
@@ -27,15 +28,25 @@ export default class CustomButton extends myReactComponent<CustomButtonProps> {
         let sColor: string = this.props.textColor || GeneralStyles.unselectedButtonText.color;
         let sBackgroundColor = this.props.backgroundColor || GeneralStyles.unselectedButton.backgroundColor;
         let icon: iconType | undefined = this.props.icon;
+        let sBgColor: string;
+        let oStyle: ViewStyle | TextStyle | undefined;
+        if (this.props.noBorder) {
+            oStyle = undefined;
+            sBgColor = 'transparent';
+            sBackgroundColor = 'white';
+        } else {
+            oStyle = Styles.button;
+            sBgColor = 'white';
+        };
         if (icon) {
             return (
                 <FontAwesome6.Button
                     name={icon}
-                    backgroundColor='white'
+                    backgroundColor={sBgColor}
                     color={sColor}
                     // style={[Styles.button]}
                     style={[
-                        Styles.button,
+                        oStyle,
                         {
                             backgroundColor: sBackgroundColor
                         }]}
@@ -84,8 +95,8 @@ const Styles = {
         elevation: 2
     },
     container: {
-        marginHorizontal: 50,
-        marginVertical: 10
+        // marginHorizontal: 50,
+        // marginVertical: 10
     },
     title: {
         marginHorizontal: 20

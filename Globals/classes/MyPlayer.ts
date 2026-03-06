@@ -1,9 +1,9 @@
 import * as Audio from "expo-audio";
-import { myTreeNode } from "./HomepageTypes";
-import { cl_id, cl_link, cl_title } from "./CharUtility";
+import { myTreeNode } from "../HomepageTypes";
+import { cl_conversion, cl_id, cl_link, cl_title } from "./CharUtility";
 import { NativeEventEmitter } from "react-native";
 import myNotification, { notifCategory, scheduleNotificationType } from "./MyNotifications";
-import i18n_class from "./i18n/i18n.general";
+import i18n_class from "../i18n/i18n.general";
 
 export enum playingStatus {
     none,
@@ -13,15 +13,22 @@ export enum playingStatus {
 };
 
 export declare type currentPlayingType = {
-    name: string,
-    playing: boolean,
-    paused: boolean
-};
-
-declare type currentPlayingTypeIntern = {
     id: string,
     name: string,
+    playing: boolean,
     paused: boolean,
+    duration?: Audio.AudioStatus['duration']
+};
+
+export enum playEventType {
+    playbackStatusUpdate = 'playbackStatusUpdate',
+    trackStatusUpdate = 'trackStatusUpdate'
+};
+
+declare type currentPlayingTypeIntern = currentPlayingType & {
+    // id: string,
+    // name: string,
+    // paused: boolean,
     oAudio: Audio.AudioPlayer
 };
 
@@ -51,6 +58,10 @@ class myPlayerInstance {
 
     public getList(): currentPlayingType[] {
         return this._aCurrentPlayingOut;
+    };
+
+    public getTrackInfo(): currentPlayingType | undefined {
+        return this._oCurrentPlayingOut;
     };
 
     private get _oCurrentPlaying(): currentPlayingTypeIntern | undefined {
@@ -90,7 +101,7 @@ class myPlayerInstance {
                     this._oCurrentPlaying.oAudio.seekTo(0);
                     this._oCurrentPlaying.oAudio.pause();
                     this._oCurrentPlaying.paused = false;
-                    console.log("onNextPaused:", this._oCurrentPlaying.oAudio);
+                    //console.log("onNextPaused:", this._oCurrentPlaying.oAudio);
                 };
             };
         } catch (error) {
@@ -147,15 +158,20 @@ class myPlayerInstance {
             this._aAlreadyFinished.push(status.id);
             // console.log(status, this._aAlreadyFinished);
             this.onNext();
-            setTimeout(() => {
-                this._isHandlingFinish = false;
-            }, 100);
+            //setTimeout(this._HandlingFinished.bind(this), 1000);
+            this._isHandlingFinish = false;
         };
         // setTimeout(() => {
         //     this._onAudioStatusFinishedAsync(status);
         // }, 2);
-        this._oEvent.emit('playbackStatusUpdate', this._aCurrentPlayingOut);
+        this._oEvent.emit(playEventType.playbackStatusUpdate, this._aCurrentPlayingOut);
+        this._oEvent.emit(playEventType.trackStatusUpdate, this._oCurrentPlaying);
     };
+
+    // private _HandlingFinished(){
+    //     console.log("_HandlingFinished");
+    //     this._isHandlingFinish = false;
+    // };
 
     // private _onAudioStatusFinishedAsync(status: Audio.AudioStatus): void {
     //     if (status.didJustFinish === true && this._aAlreadyFinished.find((id) => { return id === status.id }) === undefined) {
@@ -169,13 +185,20 @@ class myPlayerInstance {
         let aReturn: currentPlayingType[] = [];
         this._aCurrentPlaying.forEach((oValue) => {
             let oReturn: currentPlayingType = {
+                id: oValue.id,
                 name: oValue.name,
                 playing: oValue.oAudio.playing,
-                paused: oValue.paused
+                paused: oValue.paused,
+                duration: oValue.oAudio.currentStatus.duration
             };
             aReturn.push(oReturn);
         });
         return aReturn;
+    };
+
+
+    private get _oCurrentPlayingOut(): currentPlayingType | undefined {
+        return this._aCurrentPlaying[this._iPlayingIndex];
     };
 
     private _newNotification() {
@@ -192,13 +215,15 @@ class myPlayerInstance {
     public get nCurrentTime(): string {
         // let nReturn: number = this._oCurrentPlaying?.oAudio.currentStatus.currentTime || 0;
         // return nReturn.toFixed(2);;
-        return myPlayerInstance._timeToString(this._oCurrentPlaying?.oAudio.currentStatus.currentTime);
+        //return myPlayerInstance._timeToString(this._oCurrentPlaying?.oAudio.currentStatus.currentTime);
+        return cl_conversion.timeToString(this._oCurrentPlaying?.oAudio.currentStatus.currentTime);
     };
 
     public get nDuration(): string {
         // let nReturn: number = this._oCurrentPlaying?.oAudio.currentStatus.duration || 0;
         // return nReturn.toFixed(2);
-        return myPlayerInstance._timeToString(this._oCurrentPlaying?.oAudio.currentStatus.duration);
+        // return myPlayerInstance._timeToString(this._oCurrentPlaying?.oAudio.currentStatus.duration);
+        return cl_conversion.timeToString(this._oCurrentPlaying?.oAudio.currentStatus.duration);
     };
 
     public get bPlaying(): boolean {
@@ -209,21 +234,21 @@ class myPlayerInstance {
         return this._oEvent.addListener(eventType, listener);
     };
 
-    private static _timeToString(nTime: number | undefined): string {
-        if (nTime === undefined) {
-            return "";
-        };
-        let nHours: number = Math.floor(nTime / 3600);
-        let nMinutes: number = Math.floor((nTime % 3600) / 60);
-        let nSeconds: number = Math.floor(nTime % 60);
-        let sReturn: string = "";
-        if (nHours > 0) {
-            sReturn += nHours.toString().padStart(2, '0') + ":";
-        };
-        sReturn += nMinutes.toString().padStart(2, '0') + ":";
-        sReturn += nSeconds.toString().padStart(2, '0');
-        return sReturn;
-    }
+    // private static _timeToString(nTime: number | undefined): string {
+    //     if (nTime === undefined) {
+    //         return "";
+    //     };
+    //     let nHours: number = Math.floor(nTime / 3600);
+    //     let nMinutes: number = Math.floor((nTime % 3600) / 60);
+    //     let nSeconds: number = Math.floor(nTime % 60);
+    //     let sReturn: string = "";
+    //     if (nHours > 0) {
+    //         sReturn += nHours.toString().padStart(2, '0') + ":";
+    //     };
+    //     sReturn += nMinutes.toString().padStart(2, '0') + ":";
+    //     sReturn += nSeconds.toString().padStart(2, '0');
+    //     return sReturn;
+    // }
 };
 
 
@@ -265,7 +290,8 @@ export default class myPlayer {
                                 id: oCurrentNode.id,
                                 name: cl_title.concat(sName, oCurrentNode.name),
                                 oAudio: Audio.createAudioPlayer(cl_link.getSource(oCurrentNode)),
-                                paused: false
+                                paused: false,
+                                playing: false
                             });
                         } else {
                             sName = cl_title.concat(sName, oCurrentNode.name);
@@ -282,7 +308,11 @@ export default class myPlayer {
 
     public static getList(): currentPlayingType[] {
         return this._oInstance.getList();
-    }
+    };
+
+    public static getTrackInfo(): currentPlayingType | undefined {
+        return this._oInstance.getTrackInfo();
+    };
 
     public static play(): currentPlayingType[] {
         return this._oInstance.onPlay();
@@ -302,5 +332,13 @@ export default class myPlayer {
 
     public static get playingStatus(): playingStatus {
         return this._oInstance.playingStatus;
+    };
+
+    public static get nCurrentTime(): string {
+        return this._oInstance.nCurrentTime;
+    };
+
+    public static get nDuration(): string {
+        return this._oInstance.nDuration;
     };
 };

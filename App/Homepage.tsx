@@ -1,15 +1,9 @@
-import React, { createRef, useRef } from 'react';
-import { StatusBar } from 'expo-status-bar';
+import React from 'react';
 import myReactComponent from '../CustomComponent/myReactNativeComponent';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet } from 'react-native';
 import BooksList from './MinorComponent/completeList';
-import { currentPlayingType, myTreeNode } from '../Globals/HomepageTypes';
 import CurrentlyPlaying from './MinorComponent/currentlyPlaying';
-import { cl_id, cl_title } from '../Globals/CharUtility';
-import { activateKeepAwakeAsync } from 'expo-keep-awake';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { BottomTabNavigationOptions, createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import myPlayer from '../Globals/MyPlayer';
 import { NavigationContainer } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 //import Sound from 'react-native-sound';

@@ -15,5 +15,10 @@ export const GeneralStyles = StyleSheet.create({
     },
     unselectedButtonText: {
         color: 'blue'
+    },
+    container: {
+        flex: 1,
+        margin: 10,
+        rowGap: 10
     }
 });

@@ -5,13 +5,24 @@ import i18n_it from "./i18n.it"
 declare type i18n_BooksList = {
     at: string,
     nt: string,
+    titleNT: string,
+    titleAT: string,
     playSelected: string
 };
 
+declare type i18n_searchOptions = {
+    searchButton: string,
+    searchClose: string,
+    searchCancel: string,
+    searchTitle: string,
+    searchPlaceholder: string,
+    unselect: string
+};
 
 declare type i18n_Tabs = {
     scelta: string,
-    playing: string
+    playing: string,
+    info_button: string
 };
 
 declare type i18n_CurrentlyPlaying = {
@@ -43,6 +54,9 @@ export interface i18n {
 
     //Homepage - Booklist
     BooksList: i18n_BooksList,
+
+    //Barra di ricerca
+    searchOptions: i18n_searchOptions,
 
     //Homepage - Currently Playing
     CurrentlyPlaying: i18n_CurrentlyPlaying,

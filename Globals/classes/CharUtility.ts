@@ -3,7 +3,7 @@ import { AudioSource } from "expo-audio";
 //import fs = require("file-system");
 //import * as fs from "file-system";
 //import * as FileSystem from 'expo-file-system';
-import { myTreeNode } from "./HomepageTypes";
+import { myTreeNode } from "../HomepageTypes";
 //import * as sounds from '../assets/data/';
 
 
@@ -117,7 +117,7 @@ export class cl_id {
             try {
                 // console.log(JSON.stringify(require('../assets/ordine.json')));
                 // this._aSortingOrder = require('../assets/ordine.json');
-                let aSortingOrder: sortingOrder[] = require('../assets/ordine.json');
+                let aSortingOrder: sortingOrder[] = require('../../assets/ordine.json');
                 this._oSortingOrder = new Map(aSortingOrder.map(item => [item.id, item]));
                 // console.log("aSortingOrder", this._aSortingOrder);
             } catch (error) {
@@ -191,7 +191,32 @@ export class cl_title {
         } else if (sTitle2 === '') {
             return sTitle1;
         } else {
-            return sTitle1 + ' - ' + sTitle2;
+            if (sTitle1 === 'Salmi') {
+                return sTitle2;
+            } else if (sTitle2.includes('Capitolo ')) {
+                return sTitle1 + ' - ' + sTitle2.substring(9);
+            } else {
+                return sTitle1 + ' - ' + sTitle2;
+                ;
+            }
         };
+    };
+}
+
+export class cl_conversion {
+    public static timeToString(nTime: number | undefined): string {
+        if (nTime === undefined || nTime === 0) {
+            return "--.--";
+        };
+        let nHours: number = Math.floor(nTime / 3600);
+        let nMinutes: number = Math.floor((nTime % 3600) / 60);
+        let nSeconds: number = Math.floor(nTime % 60);
+        let sReturn: string = "";
+        if (nHours > 0) {
+            sReturn += nHours.toString().padStart(2, '0') + ":";
+        };
+        sReturn += nMinutes.toString().padStart(2, '0') + ":";
+        sReturn += nSeconds.toString().padStart(2, '0');
+        return sReturn;
     };
 }

@@ -5,14 +5,27 @@ export default class i18n_it implements i18n {
 
     Tabs= {
         scelta: 'Scegli brano',
-        playing: 'In riproduzione'
+        playing: 'In riproduzione',
+        info_button: 'Info'
     };
 
     //Homepage - Chant list
     BooksList = {
         at: 'AT',
         nt: 'NT',
+        titleNT: 'Nuovo Testamento',
+        titleAT: 'Antico Testamento',
         playSelected: 'Riproduci sel.'
+    };
+
+    searchOptions = {
+        searchButton: 'Cerca',
+        searchClose: 'Chiudi',
+        searchCancel: 'Rimuovi filtri',
+        searchTitle: 'Ricerca libro desiderato',
+        // searchPlaceholder: 'Cerca capitolo...',
+        searchPlaceholder: 'Scrivi libro qui',
+        unselect: 'Desel. tutto'
     };
 
     //Filters

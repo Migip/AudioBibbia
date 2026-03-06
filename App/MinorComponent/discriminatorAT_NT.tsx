@@ -69,7 +69,8 @@ export default class Discriminator extends myReactComponent<DiscriminatorProps> 
         return (
             <View
                 style={[{
-                    flexDirection: 'row'
+                    flexDirection: 'row',
+                    justifyContent: 'space-evenly',
                 }]}>
                 <ActiveButton
                     title={this._oI18n.BooksList.at}
@@ -180,23 +181,23 @@ export default class Discriminator extends myReactComponent<DiscriminatorProps> 
     // }
 }
 
-const Styles = {
-    button: {
-        borderRadius: 90,
-        borderWidth: 1,
-        padding: 10,
-        elevation: 2
-    },
-    selectedButton: {
-        backgroundColor: 'blue'
-    },
-    selectedText: {
-        color: 'white'
-    },
-    unselectedButton: {
-        backgroundColor: 'white'
-    },
-    unselectedText: {
-        color: 'blue'
-    }
-}
+// const Styles = {
+//     button: {
+//         borderRadius: 90,
+//         borderWidth: 1,
+//         padding: 10,
+//         elevation: 2
+//     },
+//     selectedButton: {
+//         backgroundColor: 'blue'
+//     },
+//     selectedText: {
+//         color: 'white'
+//     },
+//     unselectedButton: {
+//         backgroundColor: 'white'
+//     },
+//     unselectedText: {
+//         color: 'blue'
+//     }
+// }

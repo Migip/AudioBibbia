@@ -4,13 +4,14 @@ import myReactComponent from '../../CustomComponent/myReactNativeComponent';
 import { Button, FlatList, GestureResponderEvent, StyleProp, Text, View, ViewStyle } from 'react-native';
 import { HomepageStyle } from '../../Styles/HomepageStyle';
 import { GeneralStyles } from '../../Styles/GeneralStyles';
-import { AudioPlayer, AudioSource, AudioStatus, createAudioPlayer, setAudioModeAsync } from 'expo-audio';
-import { cl_link } from '../../Globals/CharUtility';
-import ActiveButton from '../../CustomComponent/activeButton';
-import { myIcons } from '../../Globals/constants/Icons';
-import myPlayer, { currentPlayingType, playingStatus } from '../../Globals/MyPlayer';
+//import { AudioPlayer, AudioSource, AudioStatus, createAudioPlayer, setAudioModeAsync } from 'expo-audio';
+import myPlayer, { currentPlayingType, playEventType, playingStatus } from '../../Globals/classes/MyPlayer';
+import CurrentTrack from './currentTrack';
+import Info from '../Popup/Info';
+import { cl_conversion } from '../../Globals/classes/CharUtility';
 
 export declare type CurrentlyPlayingProps = {
+    navigation: any
     // oRef?: React.RefObject<CurrentlyPlaying | null>,
     // style?: StyleProp<ViewStyle>
 };
@@ -35,28 +36,33 @@ export default class CurrentlyPlaying extends myReactComponent<CurrentlyPlayingP
             aCurrentPlaying: [],//props.aCurrentPlaying
             // oPlayingStatus: playingStatus.none
         };
-        setAudioModeAsync({
-            shouldPlayInBackground: true
-        });
+        // setAudioModeAsync({
+        //     shouldPlayInBackground: true
+        // });
         // this._oRef = this.props.oRef;
         this.state = this._oCurrState;
+        props.navigation.setOptions({
+            headerRight: () => (
+                <Info />
+            )
+        });
     };
     public render() {
-        let sPlayingStatusText: string;
-        switch (this._oPlayingStatus) {
-            case playingStatus.playing:
-                sPlayingStatusText = this._oI18n.CurrentlyPlaying.playing
-                break;
-            case playingStatus.paused:
-                sPlayingStatusText = this._oI18n.CurrentlyPlaying.paused
-                break;
-            case playingStatus.stop:
-                sPlayingStatusText = this._oI18n.CurrentlyPlaying.stopped
-                break;
-            default:
-                sPlayingStatusText = '';
-                break;
-        };
+        // let sPlayingStatusText: string;
+        // switch (this._oPlayingStatus) {
+        //     case playingStatus.playing:
+        //         sPlayingStatusText = this._oI18n.CurrentlyPlaying.playing
+        //         break;
+        //     case playingStatus.paused:
+        //         sPlayingStatusText = this._oI18n.CurrentlyPlaying.paused
+        //         break;
+        //     case playingStatus.stop:
+        //         sPlayingStatusText = this._oI18n.CurrentlyPlaying.stopped
+        //         break;
+        //     default:
+        //         sPlayingStatusText = '';
+        //         break;
+        // };
 
         // if (this._oRef) {
         //     this._oRef.current = this;
@@ -66,47 +72,48 @@ export default class CurrentlyPlaying extends myReactComponent<CurrentlyPlayingP
                 style={[
                     // this.props.style,
                     {
-                        flexDirection: 'column',
-                        flex: 1
-                    }
+                        flexDirection: 'column'
+                    },
+                    GeneralStyles.container
                 ]}>
                 <FlatList
                     data={this.state.aCurrentPlaying}
                     style={{
-                        flex: 4
+                        flex: 4,
+                        rowGap: 10
                     }}
                     // style={ChantsListStyles.item}
-                    ListHeaderComponent={
-                        <View
-                            style={[
-                                GeneralStyles.flexHoriz
-                            ]}>
-                            <Text
-                                style={
-                                    HomepageStyle.itemNumber
-                                }>
-                                {this._oI18n.CurrentlyPlaying.ListTitle}
-                            </Text>
-                        </View>
-                    }
+                    // ListHeaderComponent={
+                    //     <View
+                    //         style={[
+                    //             GeneralStyles.flexHoriz
+                    //         ]}>
+                    //         <Text
+                    //             style={
+                    //                 HomepageStyle.itemNumber
+                    //             }>
+                    //             {this._oI18n.CurrentlyPlaying.ListTitle}
+                    //         </Text>
+                    //     </View>
+                    // }
                     renderItem={({ item }) =>
                         <View>
                             <Text style={{
                                 display: !item.playing && !item.paused ? 'flex' : 'none'
                             }}>
-                                {item.name}
+                                {item.name} ({cl_conversion.timeToString(item.duration)})
                             </Text>
                             <Text style={{
                                 display: !item.playing && item.paused ? 'flex' : 'none',
                                 fontStyle: 'italic'
                             }}>
-                                {item.name} - In pausa
+                                {item.name} - In pausa ({cl_conversion.timeToString(item.duration)})
                             </Text>
                             <Text style={{
                                 display: !item.playing ? 'none' : 'flex',
                                 fontWeight: 'bold'
                             }}>
-                                {item.name}
+                                {item.name} ({cl_conversion.timeToString(item.duration)})
                             </Text>
                         </View>
                     }
@@ -118,95 +125,39 @@ export default class CurrentlyPlaying extends myReactComponent<CurrentlyPlayingP
                         </View>
                     }
                 />
-                <View
-                    style={
-                        { flexDirection: 'column' }
-                    }>
-                    <Text>
-                        {sPlayingStatusText}
-                    </Text>
-                    <View
-                        style={[
-                            {
-                                flexDirection: 'row'
-                            }
-                        ]}>
-                        <View>
-                            <ActiveButton
-                                title={this._oI18n.CurrentlyPlaying.play}
-                                onPress={this._onPlayPress.bind(this)}
-                                icon={myIcons.play}
-                                active={this._oPlayingStatus === playingStatus.playing} />
-                            {/* <Button
-                            title='Play/Pausa'
-                            onPress={this._onPlayPausePress.bind(this)} /> */}
-                        </View>
-                        <View>
-                            <ActiveButton
-                                title={this._oI18n.CurrentlyPlaying.pause}
-                                onPress={this._onPausePress.bind(this)}
-                                icon={myIcons.pause}
-                                active={this._oPlayingStatus === playingStatus.paused} />
-                        </View>
-                        <View>
-                            <ActiveButton
-                                title={this._oI18n.CurrentlyPlaying.next}
-                                onPress={this._onNext.bind(this)}
-                                icon={myIcons.next}
-                                active={false} />
-                            {/* <Button
-                            title={this._oI18n.CurrentlyPlaying.next}
-                            onPress={this._onNext.bind(this)} /> */}
-                        </View>
-                        <View>
-                            <ActiveButton
-                                title={this._oI18n.CurrentlyPlaying.stop}
-                                onPress={this._onStop.bind(this)}
-                                icon={myIcons.stop}
-                                active={this._oPlayingStatus === playingStatus.stop} />
-                            {/* <Button
-                            title={this._oI18n.CurrentlyPlaying.stop}
-                            onPress={this._onStop.bind(this)} /> */}
-                        </View>
-                    </View>
-                    <Text>{this._oI18n.Footer.testo}
-                        {/* <Text>https://www.proclamarelaparola.it/bibbia-in-mp3/</Text> */}
-                        <Text
-                            style={{ fontWeight: 'bold' }}>
-                            https://www.proclamarelaparola.it/
-                        </Text>
-                    </Text>
-                </View>
+                <CurrentTrack
+                    onRefreshList={this._refresh.bind(this)} />
             </View>)
     };
 
     componentDidMount(): void {
         this._refresh(myPlayer.getList());
         // gestisci gli eventi di myPlayer
-        myPlayer.addListener('playbackStatusUpdate', (aCurrentPlaying: currentPlayingType[]) => {
+        // myPlayer.addListener('playbackStatusUpdate', (aCurrentPlaying: currentPlayingType[]) => {
+        myPlayer.addListener(playEventType.playbackStatusUpdate, (aCurrentPlaying: currentPlayingType[]) => {
             //console.log("CurrentlyPlaying - playbackStatusUpdate", aCurrentPlaying);
             this._refresh(aCurrentPlaying);
         });
     };
 
-    private _onPlayPress(event: GestureResponderEvent): void {
-        this._refresh(myPlayer.play());
-    };
-    private _onPausePress(event: GestureResponderEvent): void {
-        this._refresh(myPlayer.pause());
-    };
+    // private _onPlayPress(event: GestureResponderEvent): void {
+    //     this._refresh(myPlayer.play());
+    // };
+    // private _onPausePress(event: GestureResponderEvent): void {
+    //     this._refresh(myPlayer.pause());
+    // };
 
-    private _onNext(): void {
-        this._refresh(myPlayer.next());
-    };
+    // private _onNext(): void {
+    //     this._refresh(myPlayer.next());
+    // };
 
-    private _onStop(): void {
-        this._refresh(myPlayer.stop());
-    };
+    // private _onStop(): void {
+    //     this._refresh(myPlayer.stop());
+    // };
 
-    public onPlayNewList(aCurrentPlaying: currentPlayingType[]) {
-        this._refresh(aCurrentPlaying);
-    };
+    // public onPlayNewList(aCurrentPlaying: currentPlayingType[]) {
+    //     this._refresh(aCurrentPlaying);
+    // };
 
     private get _aCurrentPlaying(): currentPlayingType[] {
         return this._oCurrState.aCurrentPlaying;
@@ -217,9 +168,9 @@ export default class CurrentlyPlaying extends myReactComponent<CurrentlyPlayingP
         this.setState(this._oCurrState);
     };
 
-    private get _oPlayingStatus(): playingStatus {
-        return myPlayer.playingStatus;
-    };
+    // private get _oPlayingStatus(): playingStatus {
+    //     return myPlayer.playingStatus;
+    // };
 
     private _refresh(aNewPlayer: currentPlayingType[]) {
         this._aCurrentPlaying = aNewPlayer;

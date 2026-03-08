@@ -53,7 +53,8 @@ export default class clTheme {
 
     private _sColorScheme: ColorSchemeName;
     constructor(sColorScheme: ColorSchemeName) {
-        this._sColorScheme = sColorScheme;
+        this._sColorScheme = 'light';
+        //this._sColorScheme = sColorScheme;
     };
     private get _TxtTheme(): StyleProp<TextStyle> {
         if (this._sColorScheme === 'light') {

@@ -41,7 +41,9 @@ class myPlayerInstance {
 
     constructor() {
         Audio.setAudioModeAsync({
-            shouldPlayInBackground: true
+            playsInSilentMode: true,
+            shouldPlayInBackground: true,
+            interruptionMode: 'doNotMix'
         });
 
     };
@@ -71,6 +73,7 @@ class myPlayerInstance {
 
     public onPlay(): currentPlayingType[] {
         if (this._oCurrentPlaying?.oAudio.currentStatus.playing === false) {
+            // this._oCurrentPlaying?.oAudio.setActiveForLockScreen(true);
             this._oCurrentPlaying?.oAudio.play();
             this._oCurrentPlaying.paused = false;
         } else if ((this._oCurrentPlaying?.oAudio.currentStatus.playbackState === 'ended'

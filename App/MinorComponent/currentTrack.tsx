@@ -28,7 +28,9 @@ export default class CurrentTrack extends myReactComponent<CurrentTrackProps> {
             oCurrentPlaying: undefined,
         };
         setAudioModeAsync({
-            shouldPlayInBackground: true
+            playsInSilentMode: true,
+            shouldPlayInBackground: true,
+            interruptionMode: 'doNotMix'
         });
         // this._oRef = this.props.oRef;
         this.state = this._oCurrState;

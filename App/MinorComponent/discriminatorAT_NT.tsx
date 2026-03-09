@@ -4,6 +4,8 @@ import { Testamento } from '../../Globals/HomepageTypes';
 import { StyleProp, View, ViewStyle, TextStyle } from 'react-native';
 import { Button } from 'react-native-elements';
 import ActiveButton from '../../CustomComponent/activeButton';
+import { Dropdown } from 'react-native-element-dropdown';
+import CustomText from '../../CustomComponent/myText';
 
 export declare type DiscriminatorProps = {
     oTestamento: Testamento,
@@ -12,6 +14,7 @@ export declare type DiscriminatorProps = {
 };
 
 declare type stateType = {
+    testamento: Testamento,
     // ATbuttonStyle: StyleProp<ViewStyle>,
     // ATtextStyle: StyleProp<TextStyle>,
     // NTbuttonStyle: StyleProp<ViewStyle>,
@@ -24,9 +27,21 @@ export default class Discriminator extends myReactComponent<DiscriminatorProps> 
     // private _NTbuttonStyle: StyleProp<ViewStyle>;
     // private _NTtextStyle: StyleProp<TextStyle>;
     // private _oState: stateType;
-    // public readonly state;
+    // public readonly state: stateType;
+    private aData: { id: Testamento, label: string }[];
     public constructor(props: any) {
         super(props);
+        // this._oState = {
+        //     testamento: this.props.oTestamento,
+        // };
+        // this.state = this._oState;
+        this.aData = [{
+            id: Testamento.Antico,
+            label: this._oI18n.BooksList.at
+        }, {
+            id: Testamento.Nuovo,
+            label: this._oI18n.BooksList.nt
+        }]
         // if (this.props.oTestamento === Testamento.Antico) {
         //     this._oState = {
         //         ATbuttonStyle: Styles.selectedButton,
@@ -71,7 +86,22 @@ export default class Discriminator extends myReactComponent<DiscriminatorProps> 
                 style={[{
                     flexDirection: 'row',
                     justifyContent: 'space-evenly',
+                    flex: 1
                 }]}>
+                {/* <Dropdown
+                    style={{ flex: 1 }}
+                    data={this.aData}
+                    labelField='label'
+                    valueField='id'
+                    value={this.props.oTestamento}
+                    renderItem={(item) => { return (<View><CustomText>{item.label}</CustomText></View>) }}
+                    onChange={(item) => {
+                        if (item.id === Testamento.Antico) {
+                            this.props.onAnticoPress();
+                        } else {
+                            this.props.onNuovoPress();
+                        }
+                    }} /> */}
                 <ActiveButton
                     title={this._oI18n.BooksList.at}
                     onPress={this.props.onAnticoPress}

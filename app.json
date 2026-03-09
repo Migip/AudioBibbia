@@ -6,7 +6,6 @@
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
-    "newArchEnabled": true,
     "splash": {
       "image": "./assets/splash-icon.png",
       "resizeMode": "contain",
@@ -24,7 +23,6 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "edgeToEdgeEnabled": true,
       "permissions": [
         "android.permission.RECORD_AUDIO",
         "android.permission.MODIFY_AUDIO_SETTINGS"
@@ -32,20 +30,20 @@
       "blockedPermissions": [
         "android.permission.RECORD_AUDIO"
       ],
-      "package": "com.AudioBibbia",
-      "navigationBar": {
-        "visible": true
-      }
+      "package": "com.AudioBibbia"
     },
     "web": {
       "favicon": "./assets/favicon.png"
     },
     "plugins": [
-      "expo-audio",
+      [
+        "expo-audio",
         {
           "enableBackgroundPlayback": true
-        },
-      "expo-asset"
+        }
+      ],
+      "expo-asset",
+      "expo-font"
     ],
     "extra": {
       "eas": {

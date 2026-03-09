@@ -191,19 +191,15 @@ export enum notifCategory {
 }
 
 export default class myNotification {
-    private static _oInstance: myNotificationInstance = new myNotificationInstance();
-
-    // public static init() {
-    //     if (!this._oInstance) {
-    //         this._oInstance = new myNotificationInstance();
-    //     };
-    // };
+    // private static _oInstance: myNotificationInstance = new myNotificationInstance();
 
     public static async scheduleNotificationAsync(oOptions: scheduleNotificationType) {
-        await this._oInstance._scheduleNotificationsAsync(oOptions);
+        // notifiche disattivate
+        // await this._oInstance._scheduleNotificationsAsync(oOptions);
     };
 
     public static dismissAllNotificationsAsync() {
-        this._oInstance.dismissAllNotificationsAsync();
+        // notifiche disattivate
+        // this._oInstance.dismissAllNotificationsAsync();
     };
 };

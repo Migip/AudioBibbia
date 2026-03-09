@@ -35,7 +35,7 @@ declare type currentPlayingTypeIntern = currentPlayingType & {
 class myPlayerInstance {
     private _iPlayingIndex: number = -1;
     private _aCurrentPlaying: currentPlayingTypeIntern[] = [];
-    private _aAlreadyFinished: number[] = [];
+    private _aAlreadyFinished: string[] = [];
     private _oEvent: NativeEventEmitter = new NativeEventEmitter();
     private _isHandlingFinish: boolean = false;
 
@@ -73,9 +73,14 @@ class myPlayerInstance {
 
     public onPlay(): currentPlayingType[] {
         if (this._oCurrentPlaying?.oAudio.currentStatus.playing === false) {
-            // this._oCurrentPlaying?.oAudio.setActiveForLockScreen(true);
-            this._oCurrentPlaying?.oAudio.play();
-            this._oCurrentPlaying.paused = false;
+            // this._oCurrentPlaying?.oAudio.setActiveForLockScreen(true, {
+            //     title: this._oCurrentPlaying.name,
+            //     albumTitle: `${this.nCurrentTime}/${this.nDuration}`,
+            //     artworkUrl: 'https://github.com/Migip/AudioBibbia/blob/main/assets/adaptive-icon.png'
+            // });
+            // this._oCurrentPlaying?.oAudio.play();
+            // this._oCurrentPlaying.paused = false;
+            this._play();
         } else if ((this._oCurrentPlaying?.oAudio.currentStatus.playbackState === 'ended'
             || this._iPlayingIndex === -1)
             && this._aCurrentPlaying.length > 0) {
@@ -100,12 +105,13 @@ class myPlayerInstance {
                 // if (this.bPlaying === true) {
                 //     this._oCurrentPlaying?.oAudio.pause();
                 // };
-                if (this._oCurrentPlaying) {
-                    this._oCurrentPlaying.oAudio.seekTo(0);
-                    this._oCurrentPlaying.oAudio.pause();
-                    this._oCurrentPlaying.paused = false;
-                    //console.log("onNextPaused:", this._oCurrentPlaying.oAudio);
-                };
+                // if (this._oCurrentPlaying) {
+                //     this._oCurrentPlaying.oAudio.seekTo(0);
+                //     this._oCurrentPlaying.oAudio.pause();
+                //     this._oCurrentPlaying.paused = false;
+                //     //console.log("onNextPaused:", this._oCurrentPlaying.oAudio);
+                // };
+                this._pause();
             };
         } catch (error) {
             console.error("onNext:", error)
@@ -118,7 +124,13 @@ class myPlayerInstance {
             this._oCurrentPlaying?.oAudio.addListener(
                 'playbackStatusUpdate',
                 this._onAudioStatusUpdate.bind(this));
-            this._oCurrentPlaying?.oAudio.play();
+            // this._oCurrentPlaying?.oAudio.setActiveForLockScreen(true, {
+            //     title: this._oCurrentPlaying.name,
+            //     albumTitle: `${this.nCurrentTime}/${this.nDuration}`,
+            //     artworkUrl: 'https://github.com/Migip/AudioBibbia/blob/main/assets/adaptive-icon.png'
+            // });
+            // this._oCurrentPlaying?.oAudio.play();
+            this._play();
 
             return this._aCurrentPlayingOut;
         } else {
@@ -127,11 +139,13 @@ class myPlayerInstance {
     };
 
     public onStop(): currentPlayingType[] {
-        if (this._oCurrentPlaying) {
-            this._oCurrentPlaying.oAudio.seekTo(0);
-            this._oCurrentPlaying.oAudio.pause();
-            this._oCurrentPlaying.paused = false;
-        };
+        // if (this._oCurrentPlaying) {
+        //     this._oCurrentPlaying.oAudio.seekTo(0);
+        //     this._oCurrentPlaying.oAudio.pause();
+        //     this._oCurrentPlaying.paused = false;
+        // };
+        // this._oCurrentPlaying?.oAudio.setActiveForLockScreen(false);
+        this._stop();
         this._iPlayingIndex = -1;
         this._aAlreadyFinished = [];
         myNotification.dismissAllNotificationsAsync();
@@ -213,6 +227,32 @@ class myPlayerInstance {
         }
         //console.log(oOptions);
         myNotification.scheduleNotificationAsync(oOptions);
+    };
+
+    private _play() {
+        let oCurrent = this._oCurrentPlaying;
+        if (oCurrent) {
+            oCurrent.oAudio.setActiveForLockScreen(true, {
+                title: oCurrent.name,
+                albumTitle: `${this.nCurrentTime}/${this.nDuration}`,
+                artworkUrl: 'https://raw.githubusercontent.com/Migip/AudioBibbia/refs/heads/main/assets/icon.png',
+                artist: 'AudioBibbia'
+            });
+            oCurrent.oAudio.play();
+            oCurrent.paused = false;
+        };
+    };
+    private _pause() {
+        let oCurrent = this._oCurrentPlaying;
+        if (oCurrent) {
+            oCurrent.oAudio.seekTo(0);
+            oCurrent.oAudio.pause();
+            oCurrent.paused = false;
+        };
+    };
+    private _stop() {
+        this._pause();
+        this._oCurrentPlaying?.oAudio.setActiveForLockScreen(false);
     };
 
     public get nCurrentTime(): string {

@@ -20,6 +20,7 @@ export declare type BooksListProps = {
 };
 
 declare type stateType = {
+    sSearchText: string;
     oTestamento: Testamento,
     aTreeList: myTreeNode[]
 };
@@ -37,6 +38,7 @@ export default class BooksList extends myReactComponent<BooksListProps> {
         super(props);
         this._aCompleteTreeList = BooksList._getTreeListNT();
         this._oState = {
+            sSearchText: '',
             oTestamento: Testamento.Nuovo,
             aTreeList: this._aCompleteTreeList
         };
@@ -71,6 +73,7 @@ export default class BooksList extends myReactComponent<BooksListProps> {
                         onAnticoPress={this._onAnticoPress.bind(this)}
                         onNuovoPress={this._onNuovoPress.bind(this)} /> */}
                     <SearchOptions
+                        sSearchText={this.state.sSearchText}
                         onSearch={this._onSearch.bind(this)}
                         onUnselectPress={this._onUnselect.bind(this)}
                     />
@@ -149,14 +152,22 @@ export default class BooksList extends myReactComponent<BooksListProps> {
             this._aCompleteTreeList = BooksList._getTreeListNT();
         };
         this._oState.aTreeList = this._aCompleteTreeList;
+        console.log("State: ", this._oState.oTestamento, this._oState.sSearchText);
         this.setState(this._oState);
     };
 
     private _onAnticoPress() {
-        this.oTestamento = Testamento.Antico;
+        // this.oTestamento = Testamento.Antico;
+        this._onNewTestamento(Testamento.Antico);
     };
     private _onNuovoPress() {
-        this.oTestamento = Testamento.Nuovo;
+        // this.oTestamento = Testamento.Nuovo;
+        this._onNewTestamento(Testamento.Nuovo);
+    };
+
+    private _onNewTestamento(oNew: Testamento) {
+        this._oState.sSearchText = '';
+        this.oTestamento = oNew;
     };
 
     private _onUnselect() {
@@ -176,6 +187,7 @@ export default class BooksList extends myReactComponent<BooksListProps> {
             }
         };
         this._oState.aTreeList = aFiltered;
+        this._oState.sSearchText = sText;
         console.log("Filtered list: ", aFiltered);
         this.setState(this._oState);
     };

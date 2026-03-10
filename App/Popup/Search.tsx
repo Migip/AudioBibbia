@@ -12,30 +12,33 @@ import CustomTitle from '../../CustomComponent/myTitle';
 
 
 declare type SearchProps = {
+    sSearchText: string;
+    onTextChange: (text: string) => void;
     onSearch: (text: string) => void;
 };
 
 declare type stateType = {
-    searchText: string;
+    // searchText: string;
 };
 
 
 export default class Search extends myReactComponent<SearchProps> {
-    private _oCurrState: stateType;
-    public readonly state: stateType;
+    // private _oCurrState: stateType;
+    // public readonly state: stateType;
     private _oSearchRef?: React.RefObject<CustomPopup | null>;
 
     public constructor(props: any) {
         super(props);
         let oApp = require('../../app.json');
         this._oSearchRef = React.createRef<CustomPopup>()
-        this._oCurrState = {
-            searchText: ''
-        };
-        this.state = this._oCurrState;
+        // this._oCurrState = {
+        //     searchText: ''
+        // };
+        // this.state = this._oCurrState;
     };
 
     public render() {
+        console.log("Rendering Search component with searchText: ", this.props.sSearchText);
         return (
             <CustomPopup
                 buttonTitle={this._oI18n.searchOptions.searchButton}
@@ -55,7 +58,8 @@ export default class Search extends myReactComponent<SearchProps> {
                         <CustomSearchBar
                             placeholder={this._oI18n.searchOptions.searchPlaceholder}
                             onChangeText={this._onSearchChange.bind(this)}
-                            value={this.state.searchText} />
+                            value={this.props.sSearchText} />
+                            {/* value={this.state.searchText} /> */}
                         <View
                             style={[{
                                 flexDirection: 'column',
@@ -80,12 +84,14 @@ export default class Search extends myReactComponent<SearchProps> {
 
     private _onSearchChange(sNewText: string) {
         console.log("Search text changed: ", sNewText);
+        this.props.onTextChange(sNewText);
         this.setState({ ...this.state, searchText: sNewText });
         //this.props.onSearch(sNewText);
     };
     private _onSearchText() {
-        console.log("Search text submitted: ", this.state.searchText);
-        this.props.onSearch(this.state.searchText);
+        // console.log("Search text submitted: ", this.state.searchText);
+        // this.props.onSearch(this.state.searchText);
+        this.props.onSearch(this.props.sSearchText);
         this.setState({ ...this.state, bSearching: false });
         this._oSearchRef?.current?.Close();
     };
@@ -96,6 +102,7 @@ export default class Search extends myReactComponent<SearchProps> {
     private _onSearchCancel() {
         //this._onSearchChange('');
         this.setState({ ...this.state, searchText: '' }, this._onSearchText.bind(this));
+        this.props.onTextChange('');
 
     }
 }

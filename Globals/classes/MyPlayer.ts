@@ -235,7 +235,7 @@ class myPlayerInstance {
             oCurrent.oAudio.setActiveForLockScreen(true, {
                 title: oCurrent.name,
                 albumTitle: `${this.nCurrentTime}/${this.nDuration}`,
-                artworkUrl: 'https://raw.githubusercontent.com/Migip/AudioBibbia/refs/heads/main/assets/notif-icon.png',
+                artworkUrl: 'https://raw.githubusercontent.com/Migip/AudioBibbia/refs/heads/main/assets/notif-icon2.png',
                 artist: 'AudioBibbia'
             });
             oCurrent.oAudio.play();

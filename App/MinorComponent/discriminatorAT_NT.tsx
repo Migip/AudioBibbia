@@ -6,6 +6,7 @@ import { Button } from 'react-native-elements';
 import ActiveButton from '../../CustomComponent/activeButton';
 import { Dropdown } from 'react-native-element-dropdown';
 import CustomText from '../../CustomComponent/myText';
+import CustomTitle from '../../CustomComponent/myTitle';
 
 export declare type DiscriminatorProps = {
     oTestamento: Testamento,
@@ -37,11 +38,12 @@ export default class Discriminator extends myReactComponent<DiscriminatorProps> 
         // this.state = this._oState;
         this.aData = [{
             id: Testamento.Antico,
-            label: this._oI18n.BooksList.at
+            label: this._oI18n.BooksList.titleAT
         }, {
             id: Testamento.Nuovo,
-            label: this._oI18n.BooksList.nt
+            label: this._oI18n.BooksList.titleNT
         }]
+        console.log(this.aData);
         // if (this.props.oTestamento === Testamento.Antico) {
         //     this._oState = {
         //         ATbuttonStyle: Styles.selectedButton,
@@ -88,28 +90,33 @@ export default class Discriminator extends myReactComponent<DiscriminatorProps> 
                     justifyContent: 'space-evenly',
                     flex: 1
                 }]}>
-                {/* <Dropdown
-                    style={{ flex: 1 }}
+                <Dropdown
+                    style={[{ flex: 1 },
+                    {
+                        margin: 16,
+                        borderRadius: 12
+                    }
+                    ]}
                     data={this.aData}
                     labelField='label'
                     valueField='id'
+                    selectedTextStyle={{ fontWeight: 'bold', fontSize: 17 }}
                     value={this.props.oTestamento}
-                    renderItem={(item) => { return (<View><CustomText>{item.label}</CustomText></View>) }}
                     onChange={(item) => {
                         if (item.id === Testamento.Antico) {
                             this.props.onAnticoPress();
                         } else {
                             this.props.onNuovoPress();
                         }
-                    }} /> */}
-                <ActiveButton
+                    }} />
+                {/* <ActiveButton
                     title={this._oI18n.BooksList.at}
                     onPress={this.props.onAnticoPress}
                     active={this.props.oTestamento === Testamento.Antico} />
                 <ActiveButton
                     title={this._oI18n.BooksList.nt}
                     onPress={this.props.onNuovoPress}
-                    active={this.props.oTestamento === Testamento.Nuovo} />
+                    active={this.props.oTestamento === Testamento.Nuovo} /> */}
                 {/* <View
                     style={[
                         {

@@ -66,10 +66,10 @@ export default class BooksList extends myReactComponent<BooksListProps> {
                         flexDirection: 'row',
                         justifyContent: 'space-evenly'
                     }}>
-                    <Discriminator
+                    {/* <Discriminator
                         oTestamento={this.oTestamento}
                         onAnticoPress={this._onAnticoPress.bind(this)}
-                        onNuovoPress={this._onNuovoPress.bind(this)} />
+                        onNuovoPress={this._onNuovoPress.bind(this)} /> */}
                     <SearchOptions
                         onSearch={this._onSearch.bind(this)}
                         onUnselectPress={this._onUnselect.bind(this)}
@@ -83,9 +83,13 @@ export default class BooksList extends myReactComponent<BooksListProps> {
                             flexDirection: 'row',
                             justifyContent: 'space-evenly'
                         }}>
-                        <CustomTitle>
+                        {/* <CustomTitle>
                             {this.oTestamento === Testamento.Antico ? this._oI18n.BooksList.titleAT : this._oI18n.BooksList.titleNT}
-                        </CustomTitle>
+                        </CustomTitle> */}
+                        <Discriminator
+                            oTestamento={this.oTestamento}
+                            onAnticoPress={this._onAnticoPress.bind(this)}
+                            onNuovoPress={this._onNuovoPress.bind(this)} />
                         <CustomButton
                             title={this._oI18n.searchOptions.unselect}
                             onPress={this._onUnselect.bind(this)} />

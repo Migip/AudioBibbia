@@ -93,8 +93,8 @@ export default class Discriminator extends myReactComponent<DiscriminatorProps> 
                 <Dropdown
                     style={[{ flex: 1 },
                     {
-                        margin: 16,
-                        borderRadius: 12
+                        padding: 12,
+                        borderRadius: 12,
                     }
                     ]}
                     data={this.aData}
@@ -102,6 +102,7 @@ export default class Discriminator extends myReactComponent<DiscriminatorProps> 
                     valueField='id'
                     selectedTextStyle={{ fontWeight: 'bold', fontSize: 17 }}
                     value={this.props.oTestamento}
+                    itemTextStyle={{ fontSize: 17 }}
                     onChange={(item) => {
                         if (item.id === Testamento.Antico) {
                             this.props.onAnticoPress();

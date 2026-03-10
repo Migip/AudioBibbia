@@ -72,6 +72,10 @@ export default class BooksList extends myReactComponent<BooksListProps> {
                         oTestamento={this.oTestamento}
                         onAnticoPress={this._onAnticoPress.bind(this)}
                         onNuovoPress={this._onNuovoPress.bind(this)} /> */}
+
+                    <CustomButton
+                        title={this._oI18n.searchOptions.unselect}
+                        onPress={this._onUnselect.bind(this)} />
                     <SearchOptions
                         sSearchText={this.state.sSearchText}
                         onSearch={this._onSearch.bind(this)}
@@ -84,7 +88,8 @@ export default class BooksList extends myReactComponent<BooksListProps> {
                     <View
                         style={{
                             flexDirection: 'row',
-                            justifyContent: 'space-evenly'
+                            justifyContent: 'flex-start',
+                            alignSelf: 'flex-start',
                         }}>
                         {/* <CustomTitle>
                             {this.oTestamento === Testamento.Antico ? this._oI18n.BooksList.titleAT : this._oI18n.BooksList.titleNT}
@@ -93,9 +98,9 @@ export default class BooksList extends myReactComponent<BooksListProps> {
                             oTestamento={this.oTestamento}
                             onAnticoPress={this._onAnticoPress.bind(this)}
                             onNuovoPress={this._onNuovoPress.bind(this)} />
-                        <CustomButton
+                        {/* <CustomButton
                             title={this._oI18n.searchOptions.unselect}
-                            onPress={this._onUnselect.bind(this)} />
+                            onPress={this._onUnselect.bind(this)} /> */}
                     </View>
                     <TreeView
                         data={this.state.aTreeList}

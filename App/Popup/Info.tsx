@@ -1,6 +1,6 @@
 //import { NavigationContainer } from '@react-navigation/native';
 import React from 'react';
-import { View } from 'react-native';
+import { Linking, Pressable, View } from 'react-native';
 import myReactComponent from '../../CustomComponent/myReactNativeComponent';
 import CustomPopup from '../../CustomComponent/myPopup';
 import { myIcons } from '../../Globals/constants/Icons';
@@ -19,6 +19,7 @@ declare type stateType = {
 export default class Info extends myReactComponent<InfoProps> {
     private _oCurrState: stateType;
     public readonly state: stateType;
+    private _sURL: string = 'https://www.proclamarelaparola.it/';
 
     public constructor(props: any) {
         super(props);
@@ -40,10 +41,17 @@ export default class Info extends myReactComponent<InfoProps> {
                     <View>
                         <Text>{this._oI18n.Footer.testo}
                         </Text>
+                        <Pressable
+                            onPress={() => {
+                                // this._oLinking.openURL('https://www.proclamarelaparola.it/');
+                                Linking.openURL(this._sURL);
+                                console.log(this._sURL);
+                            }}>
                             <Text
-                                style={{ fontWeight: 'bold' }}>
-                                https://www.proclamarelaparola.it/
+                                style={{ fontWeight: 'bold', color: 'blue', textDecorationLine: 'underline' }}>
+                                {this._sURL}
                             </Text>
+                        </Pressable>
                     </View>} />
         );
     };

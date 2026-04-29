@@ -17,6 +17,7 @@ export declare type currentPlayingType = {
     name: string,
     playing: boolean,
     paused: boolean,
+    index: number,
     duration?: Audio.AudioStatus['duration']
 };
 
@@ -97,44 +98,51 @@ class myPlayerInstance {
         return this._aCurrentPlayingOut;
     };
 
-    public onNext(): currentPlayingType[] {
-        try {
-            if (this._iPlayingIndex !== -1) {
-                //let oCurrent = this._oCurrentPlaying;
-                //if (this._oCurrentPlaying?.oAudio?.playing === true) {
-                // if (this.bPlaying === true) {
-                //     this._oCurrentPlaying?.oAudio.pause();
-                // };
-                // if (this._oCurrentPlaying) {
-                //     this._oCurrentPlaying.oAudio.seekTo(0);
-                //     this._oCurrentPlaying.oAudio.pause();
-                //     this._oCurrentPlaying.paused = false;
-                //     //console.log("onNextPaused:", this._oCurrentPlaying.oAudio);
-                // };
-                this._pause();
-            };
-        } catch (error) {
-            console.error("onNext:", error)
-        };
-
-
-        // console.log("his._iPlayingIndex", this._iPlayingIndex);
-        if (this._iPlayingIndex < this._aCurrentPlaying.length - 1) {
-            this._iPlayingIndex++;
-            this._oCurrentPlaying?.oAudio.addListener(
-                'playbackStatusUpdate',
-                this._onAudioStatusUpdate.bind(this));
-            // this._oCurrentPlaying?.oAudio.setActiveForLockScreen(true, {
-            //     title: this._oCurrentPlaying.name,
-            //     albumTitle: `${this.nCurrentTime}/${this.nDuration}`,
-            //     artworkUrl: 'https://github.com/Migip/AudioBibbia/blob/main/assets/adaptive-icon.png'
-            // });
-            // this._oCurrentPlaying?.oAudio.play();
-            this._play();
-
+    public onNext(nIndex?: number): currentPlayingType[] {
+        if (this._iPlayingIndex === nIndex) {
             return this._aCurrentPlayingOut;
         } else {
-            return this.onStop();
+            try {
+                if (this._iPlayingIndex !== -1) {
+                    //let oCurrent = this._oCurrentPlaying;
+                    //if (this._oCurrentPlaying?.oAudio?.playing === true) {
+                    // if (this.bPlaying === true) {
+                    //     this._oCurrentPlaying?.oAudio.pause();
+                    // };
+                    // if (this._oCurrentPlaying) {
+                    //     this._oCurrentPlaying.oAudio.seekTo(0);
+                    //     this._oCurrentPlaying.oAudio.pause();
+                    //     this._oCurrentPlaying.paused = false;
+                    //     //console.log("onNextPaused:", this._oCurrentPlaying.oAudio);
+                    // };
+                    this._pause();
+                };
+            } catch (error) {
+                console.error("onNext:", error)
+            };
+
+            if (nIndex !== undefined) {
+                this._iPlayingIndex = nIndex - 1;
+            };
+            // console.log("his._iPlayingIndex", this._iPlayingIndex);
+            if (this._iPlayingIndex < this._aCurrentPlaying.length - 1) {
+                this._iPlayingIndex++;
+                this._oCurrentPlaying?.oAudio.addListener(
+                    'playbackStatusUpdate',
+                    this._onAudioStatusUpdate.bind(this));
+                // this._oCurrentPlaying?.oAudio.setActiveForLockScreen(true, {
+                //     title: this._oCurrentPlaying.name,
+                //     albumTitle: `${this.nCurrentTime}/${this.nDuration}`,
+                //     artworkUrl: 'https://github.com/Migip/AudioBibbia/blob/main/assets/adaptive-icon.png'
+                // });
+                // this._oCurrentPlaying?.oAudio.play();
+                this._play();
+
+                return this._aCurrentPlayingOut;
+            } else {
+                return this.onStop();
+            };
+
         };
     };
 
@@ -200,12 +208,13 @@ class myPlayerInstance {
 
     private get _aCurrentPlayingOut(): currentPlayingType[] {
         let aReturn: currentPlayingType[] = [];
-        this._aCurrentPlaying.forEach((oValue) => {
+        this._aCurrentPlaying.forEach((oValue: currentPlayingTypeIntern) => {
             let oReturn: currentPlayingType = {
                 id: oValue.id,
                 name: oValue.name,
                 playing: oValue.oAudio.playing,
                 paused: oValue.paused,
+                index: oValue.index,
                 duration: oValue.oAudio.currentStatus.duration
             };
             aReturn.push(oReturn);
@@ -315,37 +324,54 @@ export default class myPlayer {
             cl_id.sort
         );
 
-        aCheckedIds.forEach(
-            (sId) => {
-                let aIdLevel = cl_id.splitIdLevels(sId);
-                var sCurrentId: string = '';
-                var oCurrentNode: myTreeNode | undefined = undefined;
-                var sName: string = '';
-                aIdLevel.forEach(sId => {
-                    sCurrentId = cl_id.concatId(sCurrentId, sId);
-                    if (oCurrentNode === undefined) {
-                        oCurrentNode = aTreeList.find((oNode) => { return oNode.id === sCurrentId });
-                    } else {
-                        oCurrentNode = oCurrentNode.children?.find((oNode) => { return oNode.id === sCurrentId });
+        try {
+
+            var nIndex: number = -1;
+            aCheckedIds.forEach(
+                (sId) => {
+                    try {
+                        let aIdLevel = cl_id.splitIdLevels(sId);
+                        var sCurrentId: string = '';
+                        var oCurrentNode: myTreeNode | undefined = undefined;
+                        var sName: string = '';
+                        aIdLevel.forEach((sId: string) => {
+                            try {
+                                sCurrentId = cl_id.concatId(sCurrentId, sId);
+                                if (oCurrentNode === undefined) {
+                                    oCurrentNode = aTreeList.find((oNode) => { return oNode.id === sCurrentId });
+                                } else {
+                                    oCurrentNode = oCurrentNode.children?.find((oNode) => { return oNode.id === sCurrentId });
+                                };
+                                if (oCurrentNode !== undefined) {
+                                    if (oCurrentNode.link !== undefined) {
+                                        nIndex++;
+                                        aCurrentPlaying.push({
+                                            id: oCurrentNode.id,
+                                            name: cl_title.concat(sName, oCurrentNode.name),
+                                            oAudio: Audio.createAudioPlayer(cl_link.getSource(oCurrentNode)),
+                                            index: nIndex,
+                                            paused: false,
+                                            playing: false
+                                        });
+                                        //console.log("aCurrentPlaying:", aCurrentPlaying[aCurrentPlaying.length - 1]);
+                                    } else {
+                                        sName = cl_title.concat(sName, oCurrentNode.name);
+                                    };
+                                } else {
+                                    console.error("Non trovato id ", sCurrentId);
+                                };
+                            } catch (error) {
+                                console.error("Errore in aIdLevel.forEach", error);
+                            };
+                        });
+                    } catch (error) {
+                        console.error("Errore in aCheckedIds.forEach", error);
                     };
-                    if (oCurrentNode !== undefined) {
-                        if (oCurrentNode.link !== undefined) {
-                            aCurrentPlaying.push({
-                                id: oCurrentNode.id,
-                                name: cl_title.concat(sName, oCurrentNode.name),
-                                oAudio: Audio.createAudioPlayer(cl_link.getSource(oCurrentNode)),
-                                paused: false,
-                                playing: false
-                            });
-                        } else {
-                            sName = cl_title.concat(sName, oCurrentNode.name);
-                        };
-                    } else {
-                        console.log("Non trovato id ", sCurrentId);
-                    };
-                });
-            }
-        );
+                }
+            );
+        } catch (error) {
+            console.error("Errore in setNewList", error);
+        }
         return this._oInstance.setNewList(aCurrentPlaying);
     };
 
@@ -368,6 +394,10 @@ export default class myPlayer {
 
     public static stop(): currentPlayingType[] {
         return this._oInstance.onStop();
+    };
+
+    public static playFrom(nIndex: number): currentPlayingType[] {
+        return this._oInstance.onNext(nIndex);
     };
 
     public static next(): currentPlayingType[] {

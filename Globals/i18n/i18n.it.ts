@@ -30,14 +30,16 @@ export default class i18n_it implements i18n {
 
     //Filters
     CurrentlyPlaying = {
-        ListTitle: 'Brani in riproduzione',
+        ListTitle: 'Brani in lista',
+        State: 'Attivo',
+        Duration: 'Durata',
         EmptyList: 'Nessun brano in riproduzione',
         play: 'Play',
         pause: 'Pausa',
         next: 'Avanti',
         stop: 'Stop',
         playing: 'In riproduzione',
-        paused: 'Esecuzione in pausa',
+        paused: 'In pausa',
         stopped: 'Esecuzione terminata'
     };
 

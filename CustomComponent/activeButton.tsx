@@ -46,32 +46,34 @@ export default class ActiveButton extends myReactComponent<ActiveButtonProps> {
         // };
         return (
             <View>
-                <View
-                    style={[
-                        {
-                            display: this.props.active ? 'none' : 'flex'
-                        }
-                    ]}>
-                    <CustomButton
-                        title={this.props.title}
-                        onPress={this.props.onPress}
-                        icon={this.props.icon}
-                        backgroundColor={GeneralStyles.unselectedButton.backgroundColor}
-                        textColor={GeneralStyles.unselectedButtonText.color} />
-                </View>
-                <View
-                    style={[
-                        {
-                            display: this.props.active ? 'flex' : 'none'
-                        }
-                    ]}>
-                    <CustomButton
-                        title={this.props.title}
-                        onPress={this.props.onPress}
-                        icon={this.props.icon}
-                        backgroundColor={GeneralStyles.selectedButton.backgroundColor}
-                        textColor={GeneralStyles.selectedButtonText.color} />
-                </View>
+                {!this.props.active &&
+                    <View
+                        style={[
+                            // {
+                            //     display: this.props.active ? 'none' : 'flex'
+                            // }
+                        ]}>
+                        <CustomButton
+                            title={this.props.title}
+                            onPress={this.props.onPress}
+                            icon={this.props.icon}
+                            backgroundColor={GeneralStyles.unselectedButton.backgroundColor}
+                            textColor={GeneralStyles.unselectedButtonText.color} />
+                    </View>}
+                {this.props.active &&
+                    <View
+                        style={[
+                            // {
+                            //     display: this.props.active ? 'flex' : 'none'
+                            // }
+                        ]}>
+                        <CustomButton
+                            title={this.props.title}
+                            onPress={this.props.onPress}
+                            icon={this.props.icon}
+                            backgroundColor={GeneralStyles.selectedButton.backgroundColor}
+                            textColor={GeneralStyles.selectedButtonText.color} />
+                    </View>}
             </View>
         );
     }

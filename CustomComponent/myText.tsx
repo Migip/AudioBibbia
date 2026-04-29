@@ -8,7 +8,7 @@ export default class CustomText extends myReactComponent<TextProps> {
     public render() {
 
         const { children, style, ...rest } = this.props;
-        const styles = [style, clTheme.TxtTheme].filter(Boolean);
+        const styles = [clTheme.TxtTheme, style].filter(Boolean);
         return (
             <Text style={styles as any} {...rest}>
                 {children}

@@ -33,10 +33,10 @@ export default class CustomButton extends myReactComponent<CustomButtonProps> {
         if (this.props.noBorder) {
             oStyle = undefined;
             sBgColor = 'transparent';
-            sBackgroundColor = 'white';
+            sBackgroundColor = 'transparent';
         } else {
             oStyle = Styles.button;
-            sBgColor = 'white';
+            sBgColor = 'transparent';
         };
         if (icon) {
             return (
@@ -72,7 +72,8 @@ export default class CustomButton extends myReactComponent<CustomButtonProps> {
                     buttonStyle={[
                         Styles.button,
                         {
-                            backgroundColor: sBackgroundColor
+                            backgroundColor: sBackgroundColor,
+                            borderColor: 'black'
                         }]}
                     containerStyle={[
                         Styles.container

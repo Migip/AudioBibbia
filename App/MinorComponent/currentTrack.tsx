@@ -6,6 +6,7 @@ import { setAudioModeAsync } from 'expo-audio';
 import ActiveButton from '../../CustomComponent/activeButton';
 import { myIcons } from '../../Globals/constants/Icons';
 import myPlayer, { currentPlayingType, playEventType, playingStatus } from '../../Globals/classes/MyPlayer';
+import CustomText from '../../CustomComponent/myText';
 
 export declare type CurrentTrackProps = {
     onRefreshList?: (aCurrentPlaying: currentPlayingType[]) => void,
@@ -37,6 +38,7 @@ export default class CurrentTrack extends myReactComponent<CurrentTrackProps> {
     };
     public render() {
         let sPlayingStatusText: string;
+        let sTimingText: string = '';
         switch (this._oPlayingStatus) {
             case playingStatus.playing:
                 sPlayingStatusText = this._oI18n.CurrentlyPlaying.playing
@@ -53,82 +55,134 @@ export default class CurrentTrack extends myReactComponent<CurrentTrackProps> {
         };
 
         if (this._oCurrentPlaying) {
-            sPlayingStatusText += ' ' + myPlayer.nCurrentTime + ' / ' + myPlayer.nDuration;
+            sTimingText = myPlayer.nCurrentTime + ' / ' + myPlayer.nDuration;
         }
 
-        return (
-            <View
-                style={
-                    {
-                        flexDirection: 'column',
-                        display: sPlayingStatusText !== '' ? 'flex' : 'none',
-                    }
-                }>
-                <View>
-                    <Text
+        if (sPlayingStatusText !== '') {
+            return (
+                <View
+                    style={
+                        {
+                            flexDirection: 'column',
+                            // display: sPlayingStatusText !== '' ? 'flex' : 'none',
+                        }
+                    }>
+                    <View
                         style={{
-                            display: sPlayingStatusText !== '' ? 'flex' : 'none',
+                            padding: 5,
+                            rowGap: 5,
                         }}>
-                        {sPlayingStatusText}
-                    </Text>
-                    <Text
+                        <View
+                            style={{
+                                flexDirection: 'row',
+                                columnGap: 30,
+                            }}>
+                            {/* <CustomText
+                            style={{
+                                display: sPlayingStatusText !== '' ? 'flex' : 'none',
+                                fontWeight: 'bold',
+                            }}>
+                            {sPlayingStatusText}
+                        </CustomText> */}
+                            {
+                                sPlayingStatusText !== '' &&
+                                <CustomText
+                                    style={{
+                                        fontWeight: 'bold',
+                                    }}>
+                                    {sPlayingStatusText}
+                                </CustomText>
+                            }
+                            {
+                                sTimingText !== '' &&
+                                <CustomText
+                                    style={{
+                                        fontWeight: 'bold',
+                                    }}>
+                                    {sTimingText}
+                                </CustomText>
+                            }
+                            {/* <CustomText
+                            style={{
+                                display: sPlayingStatusText !== '' ? 'flex' : 'none',
+                                fontWeight: 'bold',
+                            }}>
+                            {sTimingText}
+                        </CustomText> */}
+                        </View>
+                        {
+                            this._oCurrentPlaying &&
+                            <CustomText
+                                style={{
+                                    fontWeight: 'bold',
+                                }}>
+                                {this._oCurrentPlaying?.name}
+                            </CustomText>
+                        }
+                        {/* <CustomText
                         style={{
                             display: this._oCurrentPlaying ? 'flex' : 'none',
+                            fontWeight: 'bold',
                         }}>
                         {this._oCurrentPlaying?.name}
-                    </Text>
-                </View>
-                <View
-                    style={[
-                        {
-                            flexDirection: 'row'
-                        }
-                    ]}>
-                    <View>
-                        <ActiveButton
-                            title={this._oI18n.CurrentlyPlaying.play}
-                            onPress={this._onPlayPress.bind(this)}
-                            icon={myIcons.play}
-                            active={this._oPlayingStatus === playingStatus.playing} />
-                        {/* <Button
+                    </CustomText> */}
+                    </View>
+                    <View
+                        style={[
+                            {
+                                flexDirection: 'row'
+                            }
+                        ]}>
+                        <View>
+                            <ActiveButton
+                                title={this._oI18n.CurrentlyPlaying.play}
+                                onPress={this._onPlayPress.bind(this)}
+                                icon={myIcons.play}
+                                active={this._oPlayingStatus === playingStatus.playing} />
+                            {/* <Button
                             title='Play/Pausa'
                             onPress={this._onPlayPausePress.bind(this)} /> */}
-                    </View>
-                    <View>
-                        <ActiveButton
-                            title={this._oI18n.CurrentlyPlaying.pause}
-                            onPress={this._onPausePress.bind(this)}
-                            icon={myIcons.pause}
-                            active={this._oPlayingStatus === playingStatus.paused} />
-                    </View>
-                    <View>
-                        <ActiveButton
-                            title={this._oI18n.CurrentlyPlaying.next}
-                            onPress={this._onNext.bind(this)}
-                            icon={myIcons.next}
-                            active={false} />
-                        {/* <Button
+                        </View>
+                        <View>
+                            <ActiveButton
+                                title={this._oI18n.CurrentlyPlaying.pause}
+                                onPress={this._onPausePress.bind(this)}
+                                icon={myIcons.pause}
+                                active={this._oPlayingStatus === playingStatus.paused} />
+                        </View>
+                        <View>
+                            <ActiveButton
+                                title={this._oI18n.CurrentlyPlaying.next}
+                                onPress={this._onNext.bind(this)}
+                                icon={myIcons.next}
+                                active={false} />
+                            {/* <Button
                             title={this._oI18n.CurrentlyPlaying.next}
                             onPress={this._onNext.bind(this)} /> */}
-                    </View>
-                    <View>
-                        <ActiveButton
-                            title={this._oI18n.CurrentlyPlaying.stop}
-                            onPress={this._onStop.bind(this)}
-                            icon={myIcons.stop}
-                            active={this._oPlayingStatus === playingStatus.stop} />
-                        {/* <Button
+                        </View>
+                        <View>
+                            <ActiveButton
+                                title={this._oI18n.CurrentlyPlaying.stop}
+                                onPress={this._onStop.bind(this)}
+                                icon={myIcons.stop}
+                                active={this._oPlayingStatus === playingStatus.stop} />
+                            {/* <Button
                             title={this._oI18n.CurrentlyPlaying.stop}
                             onPress={this._onStop.bind(this)} /> */}
+                        </View>
                     </View>
-                </View>
-                {/* <Text>{this._oI18n.Footer.testo}
+                    {/* <Text>{this._oI18n.Footer.testo}
                     <Text
                         style={{ fontWeight: 'bold' }}>
                         https://www.proclamarelaparola.it/
                     </Text>
                 </Text> */}
-            </View>)
+                </View >)
+        } else {
+            return (
+                <View></View>
+            )
+        }
     };
 
     componentDidMount(): void {

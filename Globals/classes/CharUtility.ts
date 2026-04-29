@@ -177,7 +177,7 @@ export class cl_link {
             oAudioSource = { uri: this.sDefault + oTree.link };
         } catch (error) {
             oAudioSource = {};
-            console.log("getSource", oTree);
+            console.error("getSource", oTree);
         }
         return oAudioSource;
         //return require(sString);

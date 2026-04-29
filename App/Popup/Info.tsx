@@ -5,6 +5,7 @@ import myReactComponent from '../../CustomComponent/myReactNativeComponent';
 import CustomPopup from '../../CustomComponent/myPopup';
 import { myIcons } from '../../Globals/constants/Icons';
 import { Text } from 'react-native-elements';
+import CustomText from '../../CustomComponent/myText';
 
 
 declare type InfoProps = {
@@ -38,19 +39,21 @@ export default class Info extends myReactComponent<InfoProps> {
                 icon={myIcons.info}
                 noBorder={true}
                 popupContent={
-                    <View>
-                        <Text>{this._oI18n.Footer.testo}
-                        </Text>
+                    <View
+                        style={{ marginBottom: 10 }}>
+                        <CustomText>
+                            {this._oI18n.Footer.testo}
+                        </CustomText>
                         <Pressable
                             onPress={() => {
                                 // this._oLinking.openURL('https://www.proclamarelaparola.it/');
                                 Linking.openURL(this._sURL);
                                 console.log(this._sURL);
                             }}>
-                            <Text
+                            <CustomText
                                 style={{ fontWeight: 'bold', color: 'blue', textDecorationLine: 'underline' }}>
                                 {this._sURL}
-                            </Text>
+                            </CustomText>
                         </Pressable>
                     </View>} />
         );

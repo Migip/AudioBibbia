@@ -1,7 +1,7 @@
 import React, { createRef, useRef } from 'react';
 import myReactComponent from '../../CustomComponent/myReactNativeComponent';
 //import { currentPlayingType } from '../../Globals/HomepageTypes';
-import { Button, FlatList, GestureResponderEvent, StyleProp, Text, View, ViewStyle } from 'react-native';
+import { Button, FlatList, GestureResponderEvent, Pressable, StyleProp, Text, TextStyle, View, ViewStyle } from 'react-native';
 import { HomepageStyle } from '../../Styles/HomepageStyle';
 import { GeneralStyles } from '../../Styles/GeneralStyles';
 //import { AudioPlayer, AudioSource, AudioStatus, createAudioPlayer, setAudioModeAsync } from 'expo-audio';
@@ -9,6 +9,13 @@ import myPlayer, { currentPlayingType, playEventType, playingStatus } from '../.
 import CurrentTrack from './currentTrack';
 import Info from '../Popup/Info';
 import { cl_conversion } from '../../Globals/classes/CharUtility';
+import CustomTitle from '../../CustomComponent/myTitle';
+import { CurrentlyPlayingStyles } from '../../Styles/CurrentlyPlayingStyles';
+import CustomText from '../../CustomComponent/myText';
+import { Item } from 'react-native-paper/lib/typescript/components/Drawer/Drawer';
+import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
+import { myIcons } from '../../Globals/constants/Icons';
+
 
 export declare type CurrentlyPlayingProps = {
     navigation: any
@@ -78,6 +85,7 @@ export default class CurrentlyPlaying extends myReactComponent<CurrentlyPlayingP
                 ]}>
                 <FlatList
                     data={this.state.aCurrentPlaying}
+                    keyExtractor={(item) => item.id}
                     style={{
                         flex: 4,
                         rowGap: 10
@@ -96,32 +104,76 @@ export default class CurrentlyPlaying extends myReactComponent<CurrentlyPlayingP
                     //         </Text>
                     //     </View>
                     // }
-                    renderItem={({ item }) =>
-                        <View>
-                            <Text style={{
-                                display: !item.playing && !item.paused ? 'flex' : 'none'
-                            }}>
-                                {item.name} ({cl_conversion.timeToString(item.duration)})
-                            </Text>
-                            <Text style={{
-                                display: !item.playing && item.paused ? 'flex' : 'none',
-                                fontStyle: 'italic'
-                            }}>
-                                {item.name} - In pausa ({cl_conversion.timeToString(item.duration)})
-                            </Text>
-                            <Text style={{
-                                display: !item.playing ? 'none' : 'flex',
-                                fontWeight: 'bold'
-                            }}>
-                                {item.name} ({cl_conversion.timeToString(item.duration)})
-                            </Text>
+                    ListHeaderComponent={
+                        <View
+                            style={[
+                                GeneralStyles.flexHoriz,
+                                CurrentlyPlayingStyles.itemSeparator
+                            ]}>
+                            <View
+                                style={[CurrentlyPlayingStyles.titleColumn]}>
+                                <CustomTitle>
+                                    {this._oI18n.CurrentlyPlaying.ListTitle}
+                                </CustomTitle>
+                            </View>
+                            {/* <View
+                                style={[CurrentlyPlayingStyles.statusColumn]}>
+                                <CustomTitle>
+                                    {this._oI18n.CurrentlyPlaying.State}
+                                </CustomTitle>
+                            </View> */}
+                            <View
+                                style={[CurrentlyPlayingStyles.durationColumn]}>
+                                <CustomTitle>
+                                    {this._oI18n.CurrentlyPlaying.Duration}
+                                </CustomTitle>
+                            </View>
                         </View>
                     }
+                    renderItem={({ item }) =>
+                        <Pressable
+                            onPress={() => { this._onPressItem(item) }}>
+                            <View
+                                style={[
+                                    GeneralStyles.flexHoriz,
+                                    CurrentlyPlayingStyles.itemSeparator
+                                ]}>
+                                <View
+                                    style={[CurrentlyPlayingStyles.titleColumn]}>
+                                    {(item.playing || item.paused) && (
+                                        <View style={{ paddingRight: 5 }}>
+                                            <FontAwesome6
+                                                name={item.playing ? myIcons.play : myIcons.pause}
+                                            />
+                                        </View>
+                                    )}
+                                    <CustomText
+                                        style={
+                                            CurrentlyPlaying.getLineStyle(item)
+                                        }>
+                                        {item.name}
+                                    </CustomText>
+                                </View>
+                                <View
+                                    style={[CurrentlyPlayingStyles.durationColumn]}>
+                                    <CustomText
+                                        style={
+                                            CurrentlyPlaying.getLineStyle(item)
+                                        }>
+                                        {cl_conversion.timeToString(item.duration)}
+                                    </CustomText>
+                                </View>
+                            </View>
+                        </Pressable>
+                    }
                     ListEmptyComponent={
-                        <View>
-                            <Text>
+                        <View
+                            style={[
+                                GeneralStyles.flexCenter,
+                                CurrentlyPlayingStyles.emptyItem]}>
+                            <CustomText>
                                 {this._oI18n.CurrentlyPlaying.EmptyList}
-                            </Text>
+                            </CustomText>
                         </View>
                     }
                 />
@@ -129,6 +181,12 @@ export default class CurrentlyPlaying extends myReactComponent<CurrentlyPlayingP
                     onRefreshList={this._refresh.bind(this)} />
             </View>)
     };
+
+    private _onPressItem(item: currentPlayingType) {
+        myPlayer.playFrom(item.index);
+        // throw new Error('Method not implemented.');
+    }
+    ;
 
     componentDidMount(): void {
         this._refresh(myPlayer.getList());
@@ -138,6 +196,10 @@ export default class CurrentlyPlaying extends myReactComponent<CurrentlyPlayingP
             //console.log("CurrentlyPlaying - playbackStatusUpdate", aCurrentPlaying);
             this._refresh(aCurrentPlaying);
         });
+    };
+
+    componentDidCatch(error: Error, errorInfo: React.ErrorInfo): void {
+        console.error("Error in CurrentlyPlaying component:", error, errorInfo);
     };
 
     // private _onPlayPress(event: GestureResponderEvent): void {
@@ -175,4 +237,20 @@ export default class CurrentlyPlaying extends myReactComponent<CurrentlyPlayingP
     private _refresh(aNewPlayer: currentPlayingType[]) {
         this._aCurrentPlaying = aNewPlayer;
     };
+
+    static getLineStyle(item: currentPlayingType): StyleProp<TextStyle> {
+        try {
+
+            return {
+                fontWeight: item.playing || item.paused ? 'bold' : 'normal',
+                fontStyle: item.paused ? 'italic' : 'normal'
+            };
+        } catch (error) {
+            console.error("Error in getLineStyle:", error);
+            return {
+                fontWeight: 'normal',
+                fontStyle: 'normal'
+            };
+        }
+    }
 }

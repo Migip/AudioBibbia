@@ -27,6 +27,8 @@ declare type i18n_Tabs = {
 
 declare type i18n_CurrentlyPlaying = {
     ListTitle: string,
+    State: string,
+    Duration: string,
     EmptyList: string,
     play: string,
     pause: string,

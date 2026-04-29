@@ -4,6 +4,17 @@ export const GeneralStyles = StyleSheet.create({
     flexHoriz: {
         flexDirection: 'row'
     },
+    flexCenter: {
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'center'
+    },
+    flexLeft: {
+        flexDirection: 'row',
+        justifyContent: 'flex-start',
+        alignItems: 'center',
+        paddingLeft: 10
+    },
     selectedButton: {
         backgroundColor: 'blue'
     },

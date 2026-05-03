@@ -7,7 +7,8 @@ declare type i18n_BooksList = {
     nt: string,
     titleNT: string,
     titleAT: string,
-    playSelected: string
+    playSelected: string,
+    popupToConfirmSelection: string
 };
 
 declare type i18n_searchOptions = {
@@ -30,6 +31,7 @@ declare type i18n_CurrentlyPlaying = {
     State: string,
     Duration: string,
     EmptyList: string,
+    PopupToConfirmTitle: string,
     play: string,
     pause: string,
     next: string,
@@ -40,12 +42,19 @@ declare type i18n_CurrentlyPlaying = {
 };
 
 declare type i18n_footer = {
-    testo: string,
+    testo1: string,
+    testo2: string,
 };
 
 declare type i18n_notif = {
     playing: string,
     paused: string,
+};
+
+declare type i18n_popup = {
+    yes: string,
+    no: string,
+    ok: string
 };
 
 export interface i18n {
@@ -67,7 +76,10 @@ export interface i18n {
     notif: i18n_notif,
 
     //Footer
-    Footer: i18n_footer
+    Footer: i18n_footer,
+
+    //Popup
+    Popup: i18n_popup
 }
 
 export default class i18n_class {

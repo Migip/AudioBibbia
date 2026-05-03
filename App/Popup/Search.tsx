@@ -38,7 +38,7 @@ export default class Search extends myReactComponent<SearchProps> {
     };
 
     public render() {
-        console.log("Rendering Search component with searchText: ", this.props.sSearchText);
+        this._log("Rendering Search component with searchText: ", this.props.sSearchText);
         return (
             <CustomPopup
                 buttonTitle={this._oI18n.searchOptions.searchButton}
@@ -83,7 +83,7 @@ export default class Search extends myReactComponent<SearchProps> {
     };
 
     private _onSearchChange(sNewText: string) {
-        console.log("Search text changed: ", sNewText);
+        this._log("Search text changed: ", sNewText);
         this.props.onTextChange(sNewText);
         this.setState({ ...this.state, searchText: sNewText });
         //this.props.onSearch(sNewText);

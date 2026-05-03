@@ -15,7 +15,8 @@ export default class i18n_it implements i18n {
         nt: 'NT',
         titleNT: 'Nuovo Testamento',
         titleAT: 'Antico Testamento',
-        playSelected: 'Riproduci sel.'
+        playSelected: 'Riproduci sel.',
+        popupToConfirmSelection: 'Vuoi interrompere la riproduzione corrente e avviare questa?'
     };
 
     searchOptions = {
@@ -34,6 +35,7 @@ export default class i18n_it implements i18n {
         State: 'Attivo',
         Duration: 'Durata',
         EmptyList: 'Nessun brano in riproduzione',
+        PopupToConfirmTitle: 'Vuoi davvero avviare questo brano?',
         play: 'Play',
         pause: 'Pausa',
         next: 'Avanti',
@@ -51,6 +53,14 @@ export default class i18n_it implements i18n {
 
     //Footer
     Footer = {
-        testo: "Le registrazioni sono state fornite da ",
+        testo1: "Le registrazioni sono state fornite da ",
+        testo2: "Se si vogliono ascoltare offline, è possibile selezionare i brani desiderati, premere su 'Riproduci sel.', lasciarli caricare e, successivamente, staccare la connessione Internet.",
+    };
+
+    //Popup
+    Popup = {
+        yes: 'Sì',
+        no: 'No',
+        ok: 'OK'
     };
 }

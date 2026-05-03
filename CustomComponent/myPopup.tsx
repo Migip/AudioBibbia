@@ -5,17 +5,20 @@ import CustomButton from './myButton';
 import myReactComponent from './myReactNativeComponent';
 import { iconType, myIcons } from '../Globals/constants/Icons';
 import { PopupStyles } from '../Styles/PopupStyles';
+import ActiveButton from './activeButton';
 
 
 declare type CustomPopupProps = {
-    buttonTitle: string,
-    icon: iconType
+    buttonTitle?: string,
+    icon?: iconType
     popupContent: ReactNode,
     onOpenModal?: { (): void },
     onCloseModal?: { (): void },
+    onConfirm?: { (): void },
     noBorder?: boolean,
     noOkButton?: true,
-    ref?: React.RefObject<CustomPopup | null>
+    ref?: React.RefObject<CustomPopup | null>,
+    toConfirm?: true
 };
 
 declare type stateType = {
@@ -27,9 +30,20 @@ export default class CustomPopup extends myReactComponent<CustomPopupProps> {
         bInfoVisible: false
     };
     public readonly state: stateType = this._oCurrState;
+    private _sButtonTitle: string;
 
     public constructor(props: any) {
         super(props);
+        if (!this.props.toConfirm &&
+            !this.props.buttonTitle) {
+            console.error('buttonTitle and icon props are required when toConfirm is not set to true',
+                this.props.toConfirm,
+                this.props.buttonTitle,
+                this.props.icon
+            );
+            //throw new Error("buttonTitle prop is required when toConfirm is not set to true");
+        };
+        this._sButtonTitle = this.props.buttonTitle || '';
     };
 
     public render() {
@@ -38,10 +52,12 @@ export default class CustomPopup extends myReactComponent<CustomPopupProps> {
                 style={[
                     PopupStyles.PopupView
                 ]}>
-                <CustomButton
-                    title={this.props.buttonTitle}
-                    onPress={this._onOpenModal.bind(this)}
-                    icon={this.props.icon} />
+                {!this.props.toConfirm && (
+                    <CustomButton
+                        title={this._sButtonTitle}
+                        onPress={this._onOpenModal.bind(this)}
+                        icon={this.props.icon} />
+                )}
                 <Modal
                     animationType="fade"
                     presentationStyle='fullScreen'
@@ -68,9 +84,28 @@ export default class CustomPopup extends myReactComponent<CustomPopupProps> {
                         /> */}
                         {!this.props.noOkButton &&
                             <CustomButton
-                                title='OK'
+                                title={this._oI18n.Popup.ok}
                                 onPress={this._onCloseModal.bind(this)}
                             />
+                        }
+                        {this.props.toConfirm &&
+                            <View
+                                style={{
+                                    flexDirection: 'row',
+                                    justifyContent: 'space-around',
+                                    margin: 20
+                                }}>
+                                <ActiveButton
+                                    title={this._oI18n.Popup.yes}
+                                    onPress={this._onConfirm.bind(this)}
+                                    active={true}
+                                />
+                                <ActiveButton
+                                    title={this._oI18n.Popup.no}
+                                    onPress={this._onCloseModal.bind(this)}
+                                    active={false}
+                                />
+                            </View>
                         }
                         {/*<CustomButton
                             title={this._oI18n.menu.PopupClose}
@@ -95,7 +130,15 @@ export default class CustomPopup extends myReactComponent<CustomPopupProps> {
         };
     };
 
+    private _onConfirm() {
+        if (this.props.onConfirm) {
+            this.props.onConfirm();
+        };
+        this._onCloseModal();
+    };
+
     public Open() {
+        this._log('CustomPopup Open method called');
         this._onOpenModal();
     };
 

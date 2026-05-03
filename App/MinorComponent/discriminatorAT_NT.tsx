@@ -43,7 +43,7 @@ export default class Discriminator extends myReactComponent<DiscriminatorProps> 
             id: Testamento.Nuovo,
             label: this._oI18n.BooksList.titleNT
         }]
-        console.log(this.aData);
+        this._log(this.aData);
         // if (this.props.oTestamento === Testamento.Antico) {
         //     this._oState = {
         //         ATbuttonStyle: Styles.selectedButton,

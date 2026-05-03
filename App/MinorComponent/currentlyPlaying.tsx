@@ -15,6 +15,7 @@ import CustomText from '../../CustomComponent/myText';
 import { Item } from 'react-native-paper/lib/typescript/components/Drawer/Drawer';
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import { myIcons } from '../../Globals/constants/Icons';
+import myViewComponent from '../../CustomComponent/myViewComponent';
 
 
 export declare type CurrentlyPlayingProps = {
@@ -30,9 +31,11 @@ declare type stateType = {
     // oPlayingStatus: playingStatus
 };
 
-export default class CurrentlyPlaying extends myReactComponent<CurrentlyPlayingProps> {
+// export default class CurrentlyPlaying extends myReactComponent<CurrentlyPlayingProps> {
+export default class CurrentlyPlaying extends myViewComponent<CurrentlyPlayingProps> {
     private _oCurrState: stateType;
     public readonly state: stateType;
+    _bActiveLog: boolean = false;
     // private _oAudio?: AudioPlayer;
     // private _oAudioSource?: AudioSource;
     //private _oRef?: React.RefObject<CurrentlyPlaying | null>;
@@ -54,7 +57,8 @@ export default class CurrentlyPlaying extends myReactComponent<CurrentlyPlayingP
             )
         });
     };
-    public render() {
+    // public render() {
+    public renderContent() {
         // let sPlayingStatusText: string;
         // switch (this._oPlayingStatus) {
         //     case playingStatus.playing:
@@ -79,7 +83,8 @@ export default class CurrentlyPlaying extends myReactComponent<CurrentlyPlayingP
                 style={[
                     // this.props.style,
                     {
-                        flexDirection: 'column'
+                        flexDirection: 'column',
+                        flex: 1
                     },
                     GeneralStyles.container
                 ]}>
@@ -183,10 +188,15 @@ export default class CurrentlyPlaying extends myReactComponent<CurrentlyPlayingP
     };
 
     private _onPressItem(item: currentPlayingType) {
-        myPlayer.playFrom(item.index);
+        this._openPopupToConfirm(this._oI18n.CurrentlyPlaying.PopupToConfirmTitle).then((result) => {
+            this._log('User selected:', result);
+            if (result) {
+                myPlayer.playFrom(item.index);
+            };
+        });
+        // myPlayer.playFrom(item.index);
         // throw new Error('Method not implemented.');
-    }
-    ;
+    };
 
     componentDidMount(): void {
         this._refresh(myPlayer.getList());

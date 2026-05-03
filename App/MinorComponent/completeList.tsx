@@ -12,6 +12,7 @@ import SearchOptions from './SearchOptions';
 import { GeneralStyles } from '../../Styles/GeneralStyles';
 import CustomButton from '../../CustomComponent/myButton';
 import CustomTitle from '../../CustomComponent/myTitle';
+import myViewComponent from '../../CustomComponent/myViewComponent';
 
 export declare type BooksListProps = {
     navigation: any
@@ -25,7 +26,8 @@ declare type stateType = {
     aTreeList: myTreeNode[]
 };
 
-export default class BooksList extends myReactComponent<BooksListProps> {
+export default class BooksList extends myViewComponent<BooksListProps> {
+// export default class BooksList extends myReactComponent<BooksListProps> {
     // private _aTreeList: myTreeNode[];
     private _aCheckedIds: string[] = [];
     private _oTreeRef?: React.RefObject<TreeViewRef<string> | null>;// = createRef();
@@ -52,7 +54,8 @@ export default class BooksList extends myReactComponent<BooksListProps> {
         //const treeViewRef = React.useRef<TreeViewRef | null>(null);
         this._oTreeRef = React.createRef<TreeViewRef>()
     };
-    public render() {
+    // public render() {
+    renderContent() {
         //this._oTreeRef = React.useRef<TreeViewRef | null>(null);
         return (
             <View
@@ -128,12 +131,24 @@ export default class BooksList extends myReactComponent<BooksListProps> {
         aIndeterminateIds: string[]
     ): void {
         this._aCheckedIds = aCheckedIds;
-        console.log("Checked IDs: ", aCheckedIds);
+        this._log("Checked IDs: ", aCheckedIds);
     };
 
     private _onPlaySelected(event: GestureResponderEvent): void {
         //this.props.onPlaySelected(this._aCheckedIds, this._oState.aTreeList);
-        myPlayer.setNewList(this._aCheckedIds, this._oState.aTreeList)
+        this._log("Play selected with checked IDs", myPlayer.getTrackInfo( ));
+        if (myPlayer.getTrackInfo( ) === undefined) {
+            myPlayer.setNewList(this._aCheckedIds, this._oState.aTreeList);
+        }
+        else {
+            this._openPopupToConfirm(this._oI18n.BooksList.popupToConfirmSelection).then((bConfirmed) => {
+                if (bConfirmed) {
+                    myPlayer.setNewList(this._aCheckedIds, this._oState.aTreeList);
+                };
+            });
+            
+        };
+
     };
 
     private static _getTreeListNT(): myTreeNode[] {
@@ -157,7 +172,7 @@ export default class BooksList extends myReactComponent<BooksListProps> {
             this._aCompleteTreeList = BooksList._getTreeListNT();
         };
         this._oState.aTreeList = this._aCompleteTreeList;
-        console.log("State: ", this._oState.oTestamento, this._oState.sSearchText);
+        this._log("State: ", this._oState.oTestamento, this._oState.sSearchText);
         this.setState(this._oState);
     };
 
@@ -193,7 +208,7 @@ export default class BooksList extends myReactComponent<BooksListProps> {
         };
         this._oState.aTreeList = aFiltered;
         this._oState.sSearchText = sText;
-        console.log("Filtered list: ", aFiltered);
+        this._log("Filtered list: ", aFiltered);
         this.setState(this._oState);
     };
 

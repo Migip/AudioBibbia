@@ -52,7 +52,7 @@ class myPlayerInstance {
     public setNewList(aNew: currentPlayingTypeIntern[]): currentPlayingType[] {
         this.onStop();
         this._aAlreadyFinished = [];
-        this._iPlayingIndex = -1;
+        // this._iPlayingIndex = -1;
 
         this._aCurrentPlaying = aNew;
         return this.onNext();

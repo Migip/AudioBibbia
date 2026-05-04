@@ -92,8 +92,9 @@ export default class CustomPopup extends myReactComponent<CustomPopupProps> {
                             <View
                                 style={{
                                     flexDirection: 'row',
-                                    justifyContent: 'space-around',
-                                    margin: 20
+                                    justifyContent: 'space-evenly',
+                                    columnGap: 20,
+                                    marginTop: 20
                                 }}>
                                 <ActiveButton
                                     title={this._oI18n.Popup.yes}

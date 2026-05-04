@@ -13,6 +13,7 @@ import { GeneralStyles } from '../../Styles/GeneralStyles';
 import CustomButton from '../../CustomComponent/myButton';
 import CustomTitle from '../../CustomComponent/myTitle';
 import myViewComponent from '../../CustomComponent/myViewComponent';
+import { isIOS } from 'react-native-elements/dist/helpers';
 
 export declare type BooksListProps = {
     navigation: any
@@ -27,7 +28,7 @@ declare type stateType = {
 };
 
 export default class BooksList extends myViewComponent<BooksListProps> {
-// export default class BooksList extends myReactComponent<BooksListProps> {
+    // export default class BooksList extends myReactComponent<BooksListProps> {
     // private _aTreeList: myTreeNode[];
     private _aCheckedIds: string[] = [];
     private _oTreeRef?: React.RefObject<TreeViewRef<string> | null>;// = createRef();
@@ -45,9 +46,24 @@ export default class BooksList extends myViewComponent<BooksListProps> {
             aTreeList: this._aCompleteTreeList
         };
         this.state = this._oState;
+        // const handleHeaderLayout = (event: any) => {
+        //     const { height } = event.nativeEvent.layout;
+        //     console.log("Header height: ", height);
+        //     props.navigation.setOptions({
+        //         headerStyle: {
+        //             height: height, // aggiungi un po' di padding
+        //         },
+        //     });
+        // };
+
         props.navigation.setOptions({
+            // headerStyle: {
+            //     height: 120, // aumenta questo valore
+            // },
             headerRight: () => (
-                <Info />
+                // <View onLayout={handleHeaderLayout}>
+                    <Info />
+                // </View>
             )
         });
         this._bActiveLog = true;
@@ -136,8 +152,8 @@ export default class BooksList extends myViewComponent<BooksListProps> {
 
     private _onPlaySelected(event: GestureResponderEvent): void {
         //this.props.onPlaySelected(this._aCheckedIds, this._oState.aTreeList);
-        this._log("Play selected with checked IDs", myPlayer.getTrackInfo( ));
-        if (myPlayer.getTrackInfo( ) === undefined) {
+        this._log("Play selected with checked IDs", myPlayer.getTrackInfo());
+        if (myPlayer.getTrackInfo() === undefined) {
             myPlayer.setNewList(this._aCheckedIds, this._oState.aTreeList);
         }
         else {
@@ -146,7 +162,7 @@ export default class BooksList extends myViewComponent<BooksListProps> {
                     myPlayer.setNewList(this._aCheckedIds, this._oState.aTreeList);
                 };
             });
-            
+
         };
 
     };

@@ -39,23 +39,26 @@ export default class Info extends myReactComponent<InfoProps> {
                 buttonTitle={this._oI18n.Tabs.info_button}
                 icon={myIcons.info}
                 noBorder={true}
+                header={true}
                 popupContent={
                     <View
-                        style={{ marginBottom: 10 }}>
-                        <CustomText>
-                            {this._oI18n.Footer.testo1}
-                        </CustomText>
-                        <Pressable
-                            onPress={() => {
-                                // this._oLinking.openURL('https://www.proclamarelaparola.it/');
-                                Linking.openURL(this._sURL);
-                                this._log(this._sURL);
-                            }}>
-                            <CustomText
-                                style={{ fontWeight: 'bold', color: 'blue', textDecorationLine: 'underline' }}>
-                                {this._sURL}
+                        style={{ marginBottom: 10, rowGap: 10, flexDirection: 'column' }}>
+                        <View>
+                            <CustomText>
+                                {this._oI18n.Footer.testo1}
                             </CustomText>
-                        </Pressable>
+                            <Pressable
+                                onPress={() => {
+                                    // this._oLinking.openURL('https://www.proclamarelaparola.it/');
+                                    Linking.openURL(this._sURL);
+                                    this._log(this._sURL);
+                                }}>
+                                <CustomText
+                                    style={{ fontWeight: 'bold', color: 'blue', textDecorationLine: 'underline' }}>
+                                    {this._sURL}
+                                </CustomText>
+                            </Pressable>
+                        </View>
                         <CustomText>
                             {this._oI18n.Footer.testo2}
                         </CustomText>

@@ -10,7 +10,8 @@ import ActiveButton from './activeButton';
 
 declare type CustomPopupProps = {
     buttonTitle?: string,
-    icon?: iconType
+    icon?: iconType,
+    header?: true,
     popupContent: ReactNode,
     onOpenModal?: { (): void },
     onCloseModal?: { (): void },
@@ -56,7 +57,8 @@ export default class CustomPopup extends myReactComponent<CustomPopupProps> {
                     <CustomButton
                         title={this._sButtonTitle}
                         onPress={this._onOpenModal.bind(this)}
-                        icon={this.props.icon} />
+                        icon={this.props.icon}
+                        header={this.props.header} />
                 )}
                 <Modal
                     animationType="fade"

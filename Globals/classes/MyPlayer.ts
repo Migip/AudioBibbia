@@ -1,7 +1,8 @@
 import * as Audio from "expo-audio";
 import { myTreeNode } from "../HomepageTypes";
 import { cl_conversion, cl_id, cl_link, cl_title } from "./CharUtility";
-import { NativeEventEmitter } from "react-native";
+//import { NativeEventEmitter } from "react-native";
+import { EventEmitter } from 'eventemitter3';
 import myNotification, { notifCategory, scheduleNotificationType } from "./MyNotifications";
 import i18n_class from "../i18n/i18n.general";
 
@@ -37,7 +38,8 @@ class myPlayerInstance {
     private _iPlayingIndex: number = -1;
     private _aCurrentPlaying: currentPlayingTypeIntern[] = [];
     private _aAlreadyFinished: string[] = [];
-    private _oEvent: NativeEventEmitter = new NativeEventEmitter();
+    //private _oEvent: NativeEventEmitter = new NativeEventEmitter();
+    private _oEvent: EventEmitter = new EventEmitter();
     private _isHandlingFinish: boolean = false;
 
     constructor() {

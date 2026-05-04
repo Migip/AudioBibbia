@@ -52,6 +52,9 @@ export default class CurrentlyPlaying extends myViewComponent<CurrentlyPlayingPr
         // this._oRef = this.props.oRef;
         this.state = this._oCurrState;
         props.navigation.setOptions({
+            // headerStyle: {
+            //     height: 120, // aumenta questo valore
+            // },
             headerRight: () => (
                 <Info />
             )

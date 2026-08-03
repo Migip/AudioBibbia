@@ -130,7 +130,9 @@ export default class CurrentTrack extends myReactComponent<CurrentTrackProps> {
                     <View
                         style={[
                             {
-                                flexDirection: 'row'
+                                flexDirection: 'row',
+                                alignContent: 'center',
+                                justifyContent: 'center'
                             }
                         ]}>
                         <View>

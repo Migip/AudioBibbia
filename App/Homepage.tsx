@@ -28,7 +28,17 @@ export default class Homepage extends myReactComponent {
             //     // <SafeAreaView style={styles.container}>
             //     //     <StatusBar style="auto" />
             <NavigationContainer>
-                <this._oTab.Navigator>
+                <this._oTab.Navigator
+                    screenOptions={{
+                        tabBarStyle: {
+                            paddingBottom: 10,
+                            height: 60, // aumenta l'altezza totale per compensare
+                        },
+                        tabBarItemStyle: {
+                            paddingBottom: 10,
+                        }
+                    }}
+                >
                     <this._oTab.Screen
                         name={this._oI18n.Tabs.scelta}
                         component={BooksList}

@@ -21,6 +21,7 @@ export declare type myTreeNode<ID = string> = {
     'name': string,
     'children'?: myTreeNode[],
     'link'?: string,
+    'duration'?: number,
     'playing'?: boolean
 };
 

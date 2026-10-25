@@ -79,7 +79,7 @@ export class cl_id {
         };
         // console.log("sort2", oOrderA, oOrderB, aSplitA[0], aSplitB[0]);
 
-        if (aSplitA.length = aSplitB.length) {
+        if (aSplitA.length === aSplitB.length) {
             for (let i = 0; i < aSplitA.length; i++) {
                 let sValueA: string = aSplitA[i];
                 let sValueB: string = aSplitB[i];

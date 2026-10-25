@@ -27,39 +27,53 @@ export enum playEventType {
     trackStatusUpdate = 'trackStatusUpdate'
 };
 
-declare type currentPlayingTypeIntern = currentPlayingType & {
-    // id: string,
-    // name: string,
-    // paused: boolean,
-    oAudio: Audio.AudioPlayer
+// La lista interna contiene solo i dati della traccia: il player nativo e' UNO solo
+// e viene riusato (replace) per ogni traccia.
+declare type currentPlayingTypeIntern = {
+    id: string,
+    name: string,
+    index: number,
+    source: Audio.AudioSource,
+    duration?: number
 };
 
 class myPlayerInstance {
     private _iPlayingIndex: number = -1;
     private _aCurrentPlaying: currentPlayingTypeIntern[] = [];
-    private _aAlreadyFinished: string[] = [];
-    //private _oEvent: NativeEventEmitter = new NativeEventEmitter();
     private _oEvent: EventEmitter = new EventEmitter();
-    private _isHandlingFinish: boolean = false;
+
+    // UN solo player nativo per tutta la vita dell'app. Cambiare traccia = replace().
+    // Cosi' la sessione audio / il foreground service Android / il Now Playing iOS
+    // restano sempre agganciati allo stesso oggetto e non vengono mai smontati
+    // e rimontati tra una traccia e l'altra.
+    private _oPlayer: Audio.AudioPlayer;
+    private _bLockScreenActive: boolean = false;
+    private _bPaused: boolean = false;          // pausa richiesta dall'utente
+    private _bAwaitingLoad: boolean = false;    // true dopo replace(), finche' la nuova traccia non e' caricata
+    private _bFinishHandled: boolean = false;   // evita doppio onNext() per la stessa traccia
 
     constructor() {
         Audio.setAudioModeAsync({
             playsInSilentMode: true,
             shouldPlayInBackground: true,
             interruptionMode: 'doNotMix'
-        });
+        }).catch((error) => console.error("setAudioModeAsync:", error));
 
+        this._oPlayer = Audio.createAudioPlayer(null, {
+            updateInterval: 500,
+            // iOS: senza questo la sessione audio viene disattivata a fine traccia e
+            // l'app viene sospesa PRIMA che il JS faccia partire la traccia successiva.
+            keepAudioSessionActive: true
+        });
+        // Il listener viene registrato UNA volta sola
+        this._oPlayer.addListener('playbackStatusUpdate', this._onAudioStatusUpdate.bind(this));
     };
 
     public setNewList(aNew: currentPlayingTypeIntern[]): currentPlayingType[] {
         this.onStop();
-        this._aAlreadyFinished = [];
-        // this._iPlayingIndex = -1;
-
         this._aCurrentPlaying = aNew;
-        return this.onNext();
+        return this.onNext(0);
     };
-
 
     public getList(): currentPlayingType[] {
         return this._aCurrentPlayingOut;
@@ -70,94 +84,61 @@ class myPlayerInstance {
     };
 
     private get _oCurrentPlaying(): currentPlayingTypeIntern | undefined {
-        //console.log("_oCurrentPlaying", this._iPlayingIndex, this._aCurrentPlaying[this._iPlayingIndex]?.name,this._aCurrentPlaying[this._iPlayingIndex]?.oAudio.currentStatus.playing);
         return this._aCurrentPlaying[this._iPlayingIndex];
     };
 
     public onPlay(): currentPlayingType[] {
-        if (this._oCurrentPlaying?.oAudio.currentStatus.playing === false) {
-            // this._oCurrentPlaying?.oAudio.setActiveForLockScreen(true, {
-            //     title: this._oCurrentPlaying.name,
-            //     albumTitle: `${this.nCurrentTime}/${this.nDuration}`,
-            //     artworkUrl: 'https://github.com/Migip/AudioBibbia/blob/main/assets/adaptive-icon.png'
-            // });
-            // this._oCurrentPlaying?.oAudio.play();
-            // this._oCurrentPlaying.paused = false;
-            this._play();
-        } else if ((this._oCurrentPlaying?.oAudio.currentStatus.playbackState === 'ended'
-            || this._iPlayingIndex === -1)
-            && this._aCurrentPlaying.length > 0) {
-            return this.onNext();
+        if (this._iPlayingIndex === -1) {
+            if (this._aCurrentPlaying.length > 0) {
+                return this.onNext(0);
+            };
+        } else if (this._oPlayer.currentStatus.playbackState === 'ended') {
+            return this.onNext(this._iPlayingIndex + 1);
+        } else if (this._oPlayer.currentStatus.playing === false) {
+            this._bPaused = false;
+            this._oPlayer.play();
         };
         return this._aCurrentPlayingOut;
     };
 
     public onPause(): currentPlayingType[] {
-        if (this._oCurrentPlaying?.oAudio.currentStatus.playing === true) {
-            this._oCurrentPlaying?.oAudio.pause();
-            this._oCurrentPlaying.paused = true;
+        if (this._iPlayingIndex !== -1 && this._oPlayer.currentStatus.playing === true) {
+            this._oPlayer.pause();
+            this._bPaused = true;
         };
         return this._aCurrentPlayingOut;
     };
 
+    /**
+     * Senza parametro: passa alla traccia successiva.
+     * Con nIndex: salta a quella traccia.
+     */
     public onNext(nIndex?: number): currentPlayingType[] {
-        if (this._iPlayingIndex === nIndex) {
+        if (nIndex !== undefined && nIndex === this._iPlayingIndex) {
             return this._aCurrentPlayingOut;
-        } else {
-            try {
-                if (this._iPlayingIndex !== -1) {
-                    //let oCurrent = this._oCurrentPlaying;
-                    //if (this._oCurrentPlaying?.oAudio?.playing === true) {
-                    // if (this.bPlaying === true) {
-                    //     this._oCurrentPlaying?.oAudio.pause();
-                    // };
-                    // if (this._oCurrentPlaying) {
-                    //     this._oCurrentPlaying.oAudio.seekTo(0);
-                    //     this._oCurrentPlaying.oAudio.pause();
-                    //     this._oCurrentPlaying.paused = false;
-                    //     //console.log("onNextPaused:", this._oCurrentPlaying.oAudio);
-                    // };
-                    this._pause();
-                };
-            } catch (error) {
-                console.error("onNext:", error)
-            };
-
-            if (nIndex !== undefined) {
-                this._iPlayingIndex = nIndex - 1;
-            };
-            // console.log("his._iPlayingIndex", this._iPlayingIndex);
-            if (this._iPlayingIndex < this._aCurrentPlaying.length - 1) {
-                this._iPlayingIndex++;
-                this._oCurrentPlaying?.oAudio.addListener(
-                    'playbackStatusUpdate',
-                    this._onAudioStatusUpdate.bind(this));
-                // this._oCurrentPlaying?.oAudio.setActiveForLockScreen(true, {
-                //     title: this._oCurrentPlaying.name,
-                //     albumTitle: `${this.nCurrentTime}/${this.nDuration}`,
-                //     artworkUrl: 'https://github.com/Migip/AudioBibbia/blob/main/assets/adaptive-icon.png'
-                // });
-                // this._oCurrentPlaying?.oAudio.play();
-                this._play();
-
-                return this._aCurrentPlayingOut;
-            } else {
-                return this.onStop();
-            };
-
         };
+        const iTarget: number = nIndex !== undefined ? nIndex : this._iPlayingIndex + 1;
+        if (iTarget < 0 || iTarget >= this._aCurrentPlaying.length) {
+            return this.onStop();
+        };
+        this._loadAndPlay(iTarget);
+        return this._aCurrentPlayingOut;
     };
 
     public onStop(): currentPlayingType[] {
-        // if (this._oCurrentPlaying) {
-        //     this._oCurrentPlaying.oAudio.seekTo(0);
-        //     this._oCurrentPlaying.oAudio.pause();
-        //     this._oCurrentPlaying.paused = false;
-        // };
-        // this._oCurrentPlaying?.oAudio.setActiveForLockScreen(false);
-        this._stop();
+        try {
+            this._oPlayer.pause();
+            if (this._bLockScreenActive) {
+                this._oPlayer.setActiveForLockScreen(false);
+                this._bLockScreenActive = false;
+            };
+        } catch (error) {
+            console.error("onStop:", error);
+        };
         this._iPlayingIndex = -1;
-        this._aAlreadyFinished = [];
+        this._bPaused = false;
+        this._bAwaitingLoad = false;
+        this._bFinishHandled = false;
         myNotification.dismissAllNotificationsAsync();
         return this._aCurrentPlayingOut;
     };
@@ -167,66 +148,93 @@ class myPlayerInstance {
             return playingStatus.none;
         } else if (this._iPlayingIndex === -1) {
             return playingStatus.stop;
-        } else if (this._oCurrentPlaying?.oAudio.currentStatus.playing === true) {
+        } else if (this.bPlaying) {
             return playingStatus.playing;
         } else {
             return playingStatus.paused;
         };
     };
 
-    private _onAudioStatusUpdate(status: Audio.AudioStatus): void {
-        //console.log(status);
-        this._newNotification();
-        if (status.didJustFinish === true
-            && this._aAlreadyFinished.find((id) => { return id === status.id }) === undefined
-            && this._isHandlingFinish === false) {
-
-            this._isHandlingFinish = true;
-            this._aAlreadyFinished.push(status.id);
-            // console.log(status, this._aAlreadyFinished);
-            this.onNext();
-            //setTimeout(this._HandlingFinished.bind(this), 1000);
-            this._isHandlingFinish = false;
+    private _loadAndPlay(iIndex: number): void {
+        const oTrack = this._aCurrentPlaying[iIndex];
+        if (oTrack === undefined) {
+            return;
         };
-        // setTimeout(() => {
-        //     this._onAudioStatusFinishedAsync(status);
-        // }, 2);
-        this._oEvent.emit(playEventType.playbackStatusUpdate, this._aCurrentPlayingOut);
-        this._oEvent.emit(playEventType.trackStatusUpdate, this._oCurrentPlaying);
+        this._iPlayingIndex = iIndex;
+        this._bPaused = false;
+        this._bFinishHandled = false;
+        this._bAwaitingLoad = true; // ignora eventuali "didJustFinish" residui della traccia precedente
+
+        try {
+            this._oPlayer.replace(oTrack.source);
+
+            const oMetadata = {
+                title: oTrack.name,
+                artworkUrl: 'https://raw.githubusercontent.com/Migip/AudioBibbia/refs/heads/main/assets/adaptive-icon.png',
+                artist: 'AudioBibbia'
+            };
+            if (this._bLockScreenActive) {
+                // Stesso player, stessa sessione: aggiorno solo i metadati
+                this._oPlayer.updateLockScreenMetadata(oMetadata);
+            } else {
+                this._oPlayer.setActiveForLockScreen(true, oMetadata);
+                this._bLockScreenActive = true;
+            };
+            this._oPlayer.play();
+        } catch (error) {
+            console.error("_loadAndPlay:", error);
+        };
+        this._preloadNext(iIndex + 1);
     };
 
-    // private _HandlingFinished(){
-    //     console.log("_HandlingFinished");
-    //     this._isHandlingFinish = false;
-    // };
+    // Scalda la traccia successiva mentre quella corrente suona, cosi' al cambio
+    // non si aspetta la rete (specie con schermo bloccato).
+    private _preloadNext(iIndex: number): void {
+        const oNext = this._aCurrentPlaying[iIndex];
+        if (oNext !== undefined) {
+            Audio.preload(oNext.source).catch((error) => console.warn("preload:", error));
+        };
+    };
 
-    // private _onAudioStatusFinishedAsync(status: Audio.AudioStatus): void {
-    //     if (status.didJustFinish === true && this._aAlreadyFinished.find((id) => { return id === status.id }) === undefined) {
-    //         this._aAlreadyFinished.push(status.id);
-    //         console.log(status, this._aAlreadyFinished);
-    //         this.onNext();
-    //     };
-    // };
+    private _onAudioStatusUpdate(status: Audio.AudioStatus): void {
+        this._newNotification();
+        if (this._bAwaitingLoad) {
+            // la nuova sorgente e' pronta: da qui in poi un "finish" e' davvero suo
+            if (status.isLoaded === true && status.playbackState !== 'ended' && status.didJustFinish === false) {
+                this._bAwaitingLoad = false;
+            };
+        } else if (status.didJustFinish === true && this._bFinishHandled === false) {
+            this._bFinishHandled = true;
+            this.onNext();
+        };
+        this._oEvent.emit(playEventType.playbackStatusUpdate, this._aCurrentPlayingOut);
+        this._oEvent.emit(playEventType.trackStatusUpdate, this._oCurrentPlayingOut);
+    };
 
     private get _aCurrentPlayingOut(): currentPlayingType[] {
-        let aReturn: currentPlayingType[] = [];
-        this._aCurrentPlaying.forEach((oValue: currentPlayingTypeIntern) => {
-            let oReturn: currentPlayingType = {
-                id: oValue.id,
-                name: oValue.name,
-                playing: oValue.oAudio.playing,
-                paused: oValue.paused,
-                index: oValue.index,
-                duration: oValue.oAudio.currentStatus.duration
-            };
-            aReturn.push(oReturn);
+        // Nessuna chiamata nativa per ogni elemento: la durata e' nota solo per la traccia in corso
+        return this._aCurrentPlaying.map((oValue: currentPlayingTypeIntern) => {
+            return this._toOut(oValue);
         });
-        return aReturn;
     };
 
-
     private get _oCurrentPlayingOut(): currentPlayingType | undefined {
-        return this._aCurrentPlaying[this._iPlayingIndex];
+        const oCurrent = this._oCurrentPlaying;
+        return oCurrent ? this._toOut(oCurrent) : undefined;
+    };
+
+    private _toOut(oValue: currentPlayingTypeIntern): currentPlayingType {
+        const bIsCurrent: boolean = oValue.index === this._iPlayingIndex;
+        return {
+            id: oValue.id,
+            name: oValue.name,
+            index: oValue.index,
+            playing: bIsCurrent && this.bPlaying,
+            paused: bIsCurrent && !this.bPlaying,
+            duration: (bIsCurrent && this._oPlayer.currentStatus.duration > 0)
+                ? this._oPlayer.currentStatus.duration
+                : oValue.duration
+        };
     };
 
     private _newNotification() {
@@ -236,74 +244,30 @@ class myPlayerInstance {
             body: this.bPlaying ? i18n_class.getI18n().notif.playing : i18n_class.getI18n().notif.paused,
             catId: this.bPlaying ? notifCategory.PAUSE : notifCategory.PLAY
         }
-        //console.log(oOptions);
         myNotification.scheduleNotificationAsync(oOptions);
     };
 
-    private _play() {
-        let oCurrent = this._oCurrentPlaying;
-        if (oCurrent) {
-            oCurrent.oAudio.setActiveForLockScreen(true, {
-                title: oCurrent.name,
-                // albumTitle: `${this.nCurrentTime}/${this.nDuration}`,
-                // artworkUrl: 'https://raw.githubusercontent.com/Migip/AudioBibbia/refs/heads/main/assets/notif-icon.png',
-                artworkUrl: 'https://raw.githubusercontent.com/Migip/AudioBibbia/refs/heads/main/assets/adaptive-icon.png',
-                artist: 'AudioBibbia'
-            });
-            oCurrent.oAudio.play();
-            oCurrent.paused = false;
-        };
-    };
-    private _pause() {
-        let oCurrent = this._oCurrentPlaying;
-        if (oCurrent) {
-            oCurrent.oAudio.seekTo(0);
-            oCurrent.oAudio.pause();
-            oCurrent.paused = false;
-        };
-    };
-    private _stop() {
-        this._pause();
-        this._oCurrentPlaying?.oAudio.setActiveForLockScreen(false);
-    };
-
     public get nCurrentTime(): string {
-        // let nReturn: number = this._oCurrentPlaying?.oAudio.currentStatus.currentTime || 0;
-        // return nReturn.toFixed(2);;
-        //return myPlayerInstance._timeToString(this._oCurrentPlaying?.oAudio.currentStatus.currentTime);
-        return cl_conversion.timeToString(this._oCurrentPlaying?.oAudio.currentStatus.currentTime);
+        return cl_conversion.timeToString(this._iPlayingIndex === -1 ? undefined : this._oPlayer.currentStatus.currentTime);
     };
 
     public get nDuration(): string {
-        // let nReturn: number = this._oCurrentPlaying?.oAudio.currentStatus.duration || 0;
-        // return nReturn.toFixed(2);
-        // return myPlayerInstance._timeToString(this._oCurrentPlaying?.oAudio.currentStatus.duration);
-        return cl_conversion.timeToString(this._oCurrentPlaying?.oAudio.currentStatus.duration);
+        return cl_conversion.timeToString(this._iPlayingIndex === -1 ? undefined : this._oPlayer.currentStatus.duration);
     };
 
     public get bPlaying(): boolean {
-        return this._oCurrentPlaying?.oAudio.currentStatus.playing || false;
+        if (this._iPlayingIndex === -1) {
+            return false;
+        };
+        const oStatus = this._oPlayer.currentStatus;
+        // Durante caricamento/buffering (non in pausa utente) la traccia e' "in riproduzione"
+        return oStatus.playing === true
+            || (this._bPaused === false && (this._bAwaitingLoad || oStatus.isBuffering === true));
     };
 
     public addListener(eventType: string, listener: (event: any) => void) {
         return this._oEvent.addListener(eventType, listener);
     };
-
-    // private static _timeToString(nTime: number | undefined): string {
-    //     if (nTime === undefined) {
-    //         return "";
-    //     };
-    //     let nHours: number = Math.floor(nTime / 3600);
-    //     let nMinutes: number = Math.floor((nTime % 3600) / 60);
-    //     let nSeconds: number = Math.floor(nTime % 60);
-    //     let sReturn: string = "";
-    //     if (nHours > 0) {
-    //         sReturn += nHours.toString().padStart(2, '0') + ":";
-    //     };
-    //     sReturn += nMinutes.toString().padStart(2, '0') + ":";
-    //     sReturn += nSeconds.toString().padStart(2, '0');
-    //     return sReturn;
-    // }
 };
 
 
@@ -322,9 +286,7 @@ export default class myPlayer {
 
     public static setNewList(aCheckedIds: string[], aTreeList: myTreeNode[]): currentPlayingType[] {
         let aCurrentPlaying: currentPlayingTypeIntern[] = [];
-        aCheckedIds.sort(
-            cl_id.sort
-        );
+        aCheckedIds = [...aCheckedIds].sort(cl_id.sort); // copia: non modificare l'array dello stato React
 
         try {
 
@@ -350,10 +312,9 @@ export default class myPlayer {
                                         aCurrentPlaying.push({
                                             id: oCurrentNode.id,
                                             name: cl_title.concat(sName, oCurrentNode.name),
-                                            oAudio: Audio.createAudioPlayer(cl_link.getSource(oCurrentNode)),
+                                            source: cl_link.getSource(oCurrentNode),
                                             index: nIndex,
-                                            paused: false,
-                                            playing: false
+                                            duration: oCurrentNode.duration
                                         });
                                         //console.log("aCurrentPlaying:", aCurrentPlaying[aCurrentPlaying.length - 1]);
                                     } else {

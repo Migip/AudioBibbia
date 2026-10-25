@@ -1,0 +1,9 @@
+name: Create development builds
+#eas workflow:run job.yml  
+jobs:
+  android_development_build:
+    name: Build Android
+    type: build
+    params:
+      platform: android
+      profile: development
